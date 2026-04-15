@@ -5,7 +5,7 @@ __pycache__/
 
 # Environment variables (보안)
 .env
-config.py
+
 # Virtual environment
 venv/
 .venv/
