@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+
+# Environment variables (보안)
+.env
+config.py
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE settings (선택사항)
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
