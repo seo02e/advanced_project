@@ -18,3 +18,6 @@ env/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# DB data 폴더
+postgre_data
