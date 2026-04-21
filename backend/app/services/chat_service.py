@@ -40,12 +40,26 @@ class ChatService:
         current_state["raw_text"] = user_message
         self.repo.save_state(session_id, current_state)
 
-        # 3. 전체 메시지 개수 반환
+
+
+###################
+        # 3. 임시 assistant 응답 생성
+        assistant_message_data = {
+            "role": "assistant",
+            "raw_text": f"테스트 응답: '{user_message}' 잘 받았어요."
+        }
+
+        # 4. assistant 메시지도 저장
+        self.repo.append_message(session_id, assistant_message_data)
+
+#####################
+        # 5. 전체 메시지 개수 반환
         messages = self.repo.get_messages(session_id)
 
         return {
             "session_id": session_id,
             "saved_message": message_data,
+            "assistant_message": assistant_message_data,
             "total_messages": len(messages)
         }
 

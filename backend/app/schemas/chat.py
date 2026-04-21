@@ -29,4 +29,5 @@ class ChatMessage(BaseModel):
 class ChatResponse(BaseModel):
     session_id: str # 채팅 세션 (대화방) 고유 식별자
     saved_message: ChatMessage # 방금 저장된 메세지
+    assistant_message: Optional[ChatMessage] = None #답변 저장
     total_messages: int # 저장된 총 메시지 개수

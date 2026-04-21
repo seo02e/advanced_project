@@ -21,3 +21,6 @@ Thumbs.db
 
 # DB data 폴더
 postgre_data
+# Frontend
+node_modules/
+dist/

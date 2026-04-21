@@ -14,8 +14,10 @@ def create_session(response: Response):
         key="session_id",
         value=result["session_id"],
         httponly=True,
+        secure=False, # https면 ture
         samesite="lax",
-        max_age=result["expires_in"]
+        max_age=result["expires_in"],
+        path="/"
     )
     return result
 
