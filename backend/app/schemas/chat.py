@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List, Literal
+from typing import Any
 # pydantic으로 사용자 입력 관련 스키마 작성 ( 자료형 제한 / 검증 과정)
 
 # 실제 메세지 내용 자연어 데이터
@@ -24,10 +25,13 @@ class ParsedUserInput(BaseModel):
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant"]
     raw_text: str
+    data: Optional[Any] = None
 
 # 한 세션에 저장되는 데이터
 class ChatResponse(BaseModel):
     session_id: str # 채팅 세션 (대화방) 고유 식별자
     saved_message: ChatMessage # 방금 저장된 메세지
     assistant_message: Optional[ChatMessage] = None #답변 저장
+    profile: Optional[Any] = None  
+    answer: Optional[Any] = None    
     total_messages: int # 저장된 총 메시지 개수

@@ -49,22 +49,18 @@ export function useChat(
     setError(null);
 
     try {
-      const answer: any = await sendChatMessage(trimmedMessage);
+      const response: any = await sendChatMessage(trimmedMessage);
 
-      const assistantMessage: ChatMessage = {
-        role: "assistant",
-        raw_text:
-          answer.display_text ??
-          answer.why_recommended ??
-          "정책 조회 결과를 확인했습니다.",
-      };
+      if (response.assistant_message) {
+        setMessages((prev) => [...prev, response.assistant_message]);
+      }
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      const data = response.assistant_message?.data ?? response.answer ?? {};
 
       const policyPanelData =
-        answer.recommended_policies?.length > 0
-          ? answer.recommended_policies
-          : (answer.retrieved_chunks?.map((chunk: any) => ({
+        data.recommended_policies?.length > 0
+          ? data.recommended_policies
+          : (data.retrieved_chunks?.map((chunk: any) => ({
               policy_id: chunk.chunk_id,
               policy_name: chunk.policy_name,
               support_type: chunk.section_title,

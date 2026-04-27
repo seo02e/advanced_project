@@ -6,8 +6,8 @@ export const getChatHistory = async (): Promise<any> => {
 };
 
 export const sendChatMessage = async (message: string): Promise<any> => {
-  const response = await api.post("/api/ask", {
-    raw_text: message,
+  const response = await api.post("/chat/", {
+    message: message, // 🔥 핵심: message로 맞추기
   });
 
   return response.data;

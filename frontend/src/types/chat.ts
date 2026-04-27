@@ -5,8 +5,9 @@ export type Role = "user" | "assistant";
 // 문자열을 검증하는 부분
 
 export interface ChatMessage {
-  role: Role;
+  role: "user" | "assistant";
   raw_text: string;
+  data?: any;
 }
 // 하나의 채팅 메시지를 나타내는 데이터 구조
 // role -> 누가 보낸 메시지인지 (user|assistant)
