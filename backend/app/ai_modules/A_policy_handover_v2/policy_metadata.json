@@ -1,0 +1,24 @@
+{
+  "dataset_name": "policy_master_final",
+  "description": "청년 정책 메타데이터 필터링용 정형 테이블",
+  "scope_note": "현재 버전은 취업 정책 중심이며 주거 정책은 아직 포함되지 않음",
+  "columns": {
+    "policy_id": "정책 고유 ID",
+    "policy_name": "정책명",
+    "category": "정책 대분류: 취업 / 주거 / unknown",
+    "subcategory": "정책 소분류",
+    "region_scope": "적용지역: 서울 / 경기 / all / 기타",
+    "age_min": "최소 연령",
+    "age_max": "최대 연령",
+    "employment_condition": "고용조건: employed / job_seeking / all / unknown",
+    "housing_condition": "주거조건: homeless / living_with_parents / renting / household_head / all / unknown",
+    "income_condition_text": "소득조건 자유서술",
+    "apply_start_date": "신청 시작일 YYYY-MM-DD",
+    "apply_end_date": "신청 종료일 YYYY-MM-DD",
+    "apply_status": "신청상태: open / closed / always / unknown",
+    "source_org": "출처기관",
+    "source_url": "상세 링크",
+    "summary": "정책 요약",
+    "source_type": "출처유형: api"
+  }
+}

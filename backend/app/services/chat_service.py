@@ -1,8 +1,10 @@
 from fastapi import HTTPException
 from app.repositories.session_repository import SessionRepository
 from app.services.session_service import SessionService
-
-
+# -----------------
+from app.ai_modules.C_profile.profile_parser_final import parse_profile
+from app.ai_modules.D_retrieval.rag_pipeline import generate_answer
+# -----------------
 # 채팅 관련 비즈니스 로직 담당
 class ChatService:
     def __init__(self):
@@ -14,55 +16,46 @@ class ChatService:
         # 세션 유효성 검사 + TTL 연장
         self.session_service.touch_session(session_id)
 
-        # 1. 원문 메시지 저장
-        message_data = {
+        # 1. 유저 메시지 저장
+        user_data = {
             "role": "user",
             "raw_text": user_message
         }
-        self.repo.append_message(session_id, message_data)
+        self.repo.append_message(session_id, user_data)
 
-        # 2. 현재 state 업데이트
-        current_state = self.repo.get_state(session_id)
+        # 2. C 모듈: 사용자 질문 -> profile 생성
+        profile = parse_profile(user_message)
 
-        if not current_state:
-            current_state = {
-                "age": None,
-                "region": None,
-                "employment_status": None,
-                "housing_status": None,
-                "income_level": None,
-                "interest_tags": [],
-                "unknown_fields": [],
-                "raw_text": ""
-            }
+        # 3. state에 profile 저장
+        self.repo.save_state(session_id, profile)
 
-        #raw_text를 파라미터로 정리
-        current_state["raw_text"] = user_message
-        self.repo.save_state(session_id, current_state)
+        # 4. D 모듈: profile -> answer JSON 생성
+        answer = generate_answer(profile)
 
+        # 5. 프론트에 보여줄 assistant 메시지 구성
+        assistant_text = answer.get("why_recommended", "")
 
-
-###################
-        # 3. 임시 assistant 응답 생성
-        assistant_message_data = {
+        assistant_data = {
             "role": "assistant",
-            "raw_text": f"테스트 응답: '{user_message}' 잘 받았어요."
+            "raw_text": assistant_text,
+            "data": answer
         }
+        self.repo.append_message(session_id, assistant_data)
 
-        # 4. assistant 메시지도 저장
-        self.repo.append_message(session_id, assistant_message_data)
-
-#####################
-        # 5. 전체 메시지 개수 반환
-        messages = self.repo.get_messages(session_id)
-
+        # 6. 프론트 반환
         return {
             "session_id": session_id,
-            "saved_message": message_data,
-            "assistant_message": assistant_message_data,
-            "total_messages": len(messages)
+            "saved_message": user_data,
+            "assistant_message": assistant_data,
+            "profile": profile,
+            "answer": answer,
+            "total_messages": len(self.repo.get_messages(session_id))
         }
+
+
 
     def get_chat_history(self, session_id: str) -> list[dict]:
         self.session_service.touch_session(session_id)
         return self.repo.get_messages(session_id)
+    
+    

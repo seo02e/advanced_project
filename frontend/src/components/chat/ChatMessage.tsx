@@ -8,11 +8,14 @@ export default function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
 
   return (
-    <div style={{ ...styles.row, justifyContent: isUser ? "flex-end" : "flex-start" }}>
+    <div
+      style={{
+        ...styles.row,
+        justifyContent: isUser ? "flex-end" : "flex-start",
+      }}
+    >
       {/* AI 아바타 */}
-      {!isUser && (
-        <div style={styles.avatar}>AI</div>
-      )}
+      {!isUser && <div style={styles.avatar}>AI</div>}
 
       <div
         style={{
@@ -55,5 +58,6 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: "1.65",
     boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
     wordBreak: "break-word",
+    whiteSpace: "pre-line",
   },
 };

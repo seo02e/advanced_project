@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ChatInput from "../components/chat/ChatInput";
 import ChatWindow from "../components/chat/ChatWindow";
 import PolicyPanel from "../components/chat/PolicyPanel";
@@ -6,6 +7,8 @@ import { useChat } from "../hooks/useChat";
 import { useSession } from "../hooks/useSession";
 
 export default function ChatPage() {
+  const [policyData, setPolicyData] = useState<any[]>([]); // ⭐ 추가
+
   const {
     sessionId,
     loading: sessionLoading,
@@ -21,7 +24,7 @@ export default function ChatPage() {
     sending,
     loadingHistory,
     error: chatError,
-  } = useChat(!!sessionId);
+  } = useChat(!!sessionId, setPolicyData); // ⭐ 추가
 
   if (sessionLoading) {
     return (
@@ -41,7 +44,6 @@ export default function ChatPage() {
 
   return (
     <div style={styles.root}>
-      {/* ── 고정 헤더 ── */}
       <header style={styles.header}>
         <div style={styles.headerInner}>
           <div style={styles.logoArea}>
@@ -57,18 +59,13 @@ export default function ChatPage() {
         </div>
       </header>
 
-      {/* ── 본문 3단 레이아웃 ── */}
       <main style={styles.main}>
-
-        {/* 왼쪽 20% : FAQ 패널 */}
         <div style={styles.faqSection}>
           <FaqPanel />
         </div>
 
-        {/* 구분선 */}
         <div style={styles.divider} />
 
-        {/* 가운데 50% : 챗봇 영역 */}
         <section style={styles.chatSection}>
           {loadingHistory ? (
             <div style={styles.loadingInner}>대화 기록 불러오는 중...</div>
@@ -76,9 +73,7 @@ export default function ChatPage() {
             <ChatWindow messages={messages} />
           )}
 
-          {chatError && (
-            <div style={styles.errorBanner}>{chatError}</div>
-          )}
+          {chatError && <div style={styles.errorBanner}>{chatError}</div>}
 
           <ChatInput
             input={input}
@@ -88,20 +83,17 @@ export default function ChatPage() {
           />
         </section>
 
-        {/* 구분선 */}
         <div style={styles.divider} />
 
-        {/* 오른쪽 30% : 정책 정보 영역 */}
+        {/* ⭐ 여기 핵심 수정 */}
         <aside style={styles.policySection}>
-          <PolicyPanel policyData={null} />
+          <PolicyPanel policyData={policyData} />
         </aside>
-
       </main>
     </div>
   );
 }
 
-/* ── 스타일 ── */
 const HEADER_H = 64;
 
 const styles: Record<string, React.CSSProperties> = {
@@ -115,8 +107,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "'Pretendard', 'Apple SD Gothic Neo', sans-serif",
     boxSizing: "border-box",
   },
-
-  /* 고정 헤더 */
   header: {
     position: "fixed",
     top: 0,
@@ -134,11 +124,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "space-between",
   },
-  logoArea: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
+  logoArea: { display: "flex", alignItems: "center", gap: "10px" },
   logoIcon: { fontSize: "22px" },
   logoTitle: {
     color: "#ffffff",
@@ -163,8 +149,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 500,
     cursor: "pointer",
   },
-
-  /* 본문 */
   main: {
     display: "flex",
     flex: 1,
@@ -172,23 +156,17 @@ const styles: Record<string, React.CSSProperties> = {
     height: `calc(100vh - ${HEADER_H}px)`,
     overflow: "hidden",
   },
-
-  /* 왼쪽 FAQ 20% */
   faqSection: {
     flex: "0 0 20%",
     width: "20%",
     overflow: "hidden",
   },
-
-  /* 구분선 */
   divider: {
     width: "1px",
     backgroundColor: "#d3d3e4",
     margin: "16px 0",
     flexShrink: 0,
   },
-
-  /* 가운데 챗봇 50% */
   chatSection: {
     flex: "0 0 50%",
     width: "50%",
@@ -198,8 +176,6 @@ const styles: Record<string, React.CSSProperties> = {
     boxSizing: "border-box",
     overflow: "hidden",
   },
-
-  /* 오른쪽 정책 30% */
   policySection: {
     flex: "0 0 30%",
     width: "30%",
@@ -207,8 +183,6 @@ const styles: Record<string, React.CSSProperties> = {
     boxSizing: "border-box",
     overflowY: "auto",
   },
-
-  /* 로딩/에러 */
   loadingWrap: {
     display: "flex",
     alignItems: "center",

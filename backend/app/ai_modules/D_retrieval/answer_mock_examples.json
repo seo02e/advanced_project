@@ -1,0 +1,85 @@
+[
+  {
+    "query": "서울에서 취업 준비중인데 지원 받을 수 있을까?",
+    "profile": {
+      "age": 26,
+      "region": "서울",
+      "employment_status": "job_seeking",
+      "housing_status": "unknown",
+      "income_level": "unknown",
+      "interest_tags": ["취업"],
+      "unknown_fields": ["income_level"]
+    },
+    "response": {
+      "result_status": "가능",
+      "recommended_policies": [
+        {
+          "policy_id": "20260415005400212750",
+          "policy_name": "2026년 미취업청년 자격증 응시료 지원사업(중랑구)",
+          "reason": "사용자의 지역, 연령, 관심 분야와 신청 가능 상태가 일치합니다.",
+          "source_url": "https://www.jungnang.go.kr/health/bbs/view/B0000117/164097?menuNo=400493",
+          "has_source": true
+        },
+        {
+          "policy_id": "20260406005400212448",
+          "policy_name": "(옹진군) 청년 자격증 응시료 지원",
+          "reason": "사용자의 지역, 연령, 관심 분야와 신청 가능 상태가 일치합니다.",
+          "source_url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=407",
+          "has_source": true
+        },
+        {
+          "policy_id": "20260406005400212407",
+          "policy_name": "(남동구) 청년도전지원사업",
+          "reason": "사용자의 지역, 연령, 관심 분야와 신청 가능 상태가 일치합니다.",
+          "source_url": null,
+          "has_source": false
+        },
+        {
+          "policy_id": "20260323005400112246",
+          "policy_name": "창업성공패키지(청년창업사관학교)",
+          "reason": "사용자의 지역, 연령, 관심 분야와 신청 가능 상태가 일치합니다.",
+          "source_url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=310&bcIdx=1065207&parentSeq=1065207",
+          "has_source": true
+        },
+        {
+          "policy_id": "20260220005400212095",
+          "policy_name": "청년 일자리사업 참여청년 모집",
+          "reason": "사용자의 지역, 연령, 관심 분야와 신청 가능 상태가 일치합니다.",
+          "source_url": "https://www.ep.go.kr/www/selectEminwonView.do?pageUnit=10&pageIndex=1&searchCnd=all&key=748&notAncmtMgtNo=48708&notAncmtSeCode=02",
+          "has_source": true
+        }
+      ],
+      "why_recommended": "정책 메타데이터 기준으로 지역, 연령, 관심 분야, 신청 가능 상태를 필터링했습니다.",
+      "need_more_info": [
+        "income_level"
+      ],
+      "caution_notes": [
+        "현재 결과는 정책 메타데이터 기반 1차 추천이며, 세부 자격 조건은 원문 확인이 필요합니다.",
+        "출처 링크가 없는 정책은 상세 확인이 필요합니다."
+      ],
+      "citations": [
+        {
+          "policy_id": "20260415005400212750",
+          "policy_name": "2026년 미취업청년 자격증 응시료 지원사업(중랑구)",
+          "source_url": "https://www.jungnang.go.kr/health/bbs/view/B0000117/164097?menuNo=400493"
+        },
+        {
+          "policy_id": "20260406005400212448",
+          "policy_name": "(옹진군) 청년 자격증 응시료 지원",
+          "source_url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=407"
+        },
+        {
+          "policy_id": "20260323005400112246",
+          "policy_name": "창업성공패키지(청년창업사관학교)",
+          "source_url": "https://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=310&bcIdx=1065207&parentSeq=1065207"
+        },
+        {
+          "policy_id": "20260220005400212095",
+          "policy_name": "청년 일자리사업 참여청년 모집",
+          "source_url": "https://www.ep.go.kr/www/selectEminwonView.do?pageUnit=10&pageIndex=1&searchCnd=all&key=748&notAncmtMgtNo=48708&notAncmtSeCode=02"
+        }
+      ],
+      "next_action": "추천 정책의 상세 링크를 확인하고, 부족한 조건 정보를 보완해 주세요."
+    }
+  }
+]

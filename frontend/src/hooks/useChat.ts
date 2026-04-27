@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { getChatHistory, sendChatMessage } from "../api/chatApi";
 import type { ChatMessage } from "../types/chat";
 
-export function useChat(enabled: boolean) {
+export function useChat(
+  enabled: boolean,
+  setPolicyData?: React.Dispatch<React.SetStateAction<any[]>>,
+) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
   const [sending, setSending] = useState<boolean>(false);
@@ -17,22 +20,14 @@ export function useChat(enabled: boolean) {
       const history: any = await getChatHistory();
 
       if (Array.isArray(history)) {
-        if (
-          history.length > 0 &&
-          history[0] &&
-          Array.isArray(history[0].messages)
-        ) {
-          setMessages(history[0].messages);
-        } else {
-          setMessages(history as ChatMessage[]);
-        }
+        setMessages(history as ChatMessage[]);
       } else if (history && Array.isArray(history.messages)) {
         setMessages(history.messages);
       } else {
         setMessages([]);
       }
     } catch {
-      setError("대화 기록을 불러오지 못했습니다.");
+      setMessages([]);
     } finally {
       setLoadingHistory(false);
     }
@@ -54,12 +49,34 @@ export function useChat(enabled: boolean) {
     setError(null);
 
     try {
-      const response = await sendChatMessage(trimmedMessage);
+      const answer: any = await sendChatMessage(trimmedMessage);
 
-      if (response.assistant_message) {
-        setMessages((prev) => [...prev, response.assistant_message!]);
-      }
-    } catch {
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        raw_text:
+          answer.display_text ??
+          answer.why_recommended ??
+          "정책 조회 결과를 확인했습니다.",
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+
+      const policyPanelData =
+        answer.recommended_policies?.length > 0
+          ? answer.recommended_policies
+          : (answer.retrieved_chunks?.map((chunk: any) => ({
+              policy_id: chunk.chunk_id,
+              policy_name: chunk.policy_name,
+              support_type: chunk.section_title,
+              summary: chunk.chunk_text,
+              short_reason: "B 기반 정책/공고 근거입니다.",
+              apply_status: "확인 필요",
+              source_url: chunk.source_url,
+            })) ?? []);
+
+      setPolicyData?.(policyPanelData);
+    } catch (err) {
+      console.error(err);
       setError("메시지 전송에 실패했습니다.");
     } finally {
       setSending(false);

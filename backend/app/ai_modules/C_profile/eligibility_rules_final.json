@@ -1,0 +1,154 @@
+{
+  "schema_version": "c_profile_v1",
+  "purpose": "사용자 자연어 질문을 Youth-Sync A/D 레이어가 사용할 수 있는 profile JSON으로 변환하고, 모르는 값은 unknown_fields로 분리한다.",
+  "profile_schema": {
+    "required_keys": [
+      "schema_version",
+      "raw_text",
+      "age",
+      "region",
+      "employment_status",
+      "housing_status",
+      "income_level",
+      "interest_tags",
+      "unknown_fields",
+      "condition_flags",
+      "result_status",
+      "reason_flags",
+      "need_more_info"
+    ],
+    "notes": {
+      "age": "정확한 숫자 나이가 없으면 null",
+      "region": "정규화 가능한 지역이 없으면 unknown",
+      "employment_status": "구직/재직/학생/실직 구분이 안 되면 unknown",
+      "housing_status": "무주택/임차/부모동거/자가 구분이 안 되면 unknown",
+      "income_level": "명시 정보가 없으면 unknown",
+      "interest_tags": "housing, employment 중 하나 이상. 단, 질문에서 관심사가 전혀 드러나지 않으면 빈 배열 가능",
+      "unknown_fields": "추정하지 않고 다시 확인해야 할 필드 목록",
+      "condition_flags": "필수 profile schema를 해치지 않는 보조 조건. 현재는 household_head_status만 사용",
+      "result_status": "정책 대조 전 단계에서는 profile_ready 또는 확인 필요만 사용",
+      "reason_flags": "왜 확인 필요인지 기계가 읽을 수 있는 사유",
+      "need_more_info": "프론트/응답에서 사용자에게 다시 물어볼 항목"
+    }
+  },
+  "allowed_values": {
+    "region": [
+      "서울",
+      "경기",
+      "인천",
+      "부산",
+      "대구",
+      "광주",
+      "대전",
+      "울산",
+      "세종",
+      "전국",
+      "unknown"
+    ],
+    "employment_status": [
+      "job_seeking",
+      "employed",
+      "unemployed",
+      "student",
+      "unknown"
+    ],
+    "housing_status": [
+      "homeless",
+      "renting",
+      "living_with_parents",
+      "homeowner",
+      "unknown"
+    ],
+    "income_level": [
+      "low",
+      "middle",
+      "high",
+      "unknown"
+    ],
+    "interest_tags": [
+      "housing",
+      "employment"
+    ],
+    "household_head_status": [
+      "yes",
+      "no",
+      "unknown"
+    ],
+    "result_status": [
+      "profile_ready",
+      "확인 필요"
+    ]
+  },
+  "normalization_rules": {
+    "employment_status": {
+      "job_seeking": ["취준", "취업 준비", "취업준비", "구직", "일자리 찾기", "미취업", "취준생", "구직자"],
+      "employed": ["재직", "직장인", "회사 다님", "근무 중", "정규직", "계약직", "알바", "아르바이트"],
+      "student": ["대학생", "학생", "재학생", "휴학생"],
+      "unemployed": ["퇴사", "실직", "무직"]
+    },
+    "housing_status": {
+      "homeless": ["무주택", "주택 없음", "집 없음", "내 명의 집 없음"],
+      "renting": ["자취", "월세", "전세", "반전세", "원룸", "고시원", "임차"],
+      "living_with_parents": ["부모님 집", "부모님과 거주", "본가", "부모 집"],
+      "homeowner": ["자가", "주택 소유", "내 집 있음"]
+    },
+    "income_level": {
+      "low": ["저소득", "소득 낮음", "기초생활수급", "수급자", "차상위", "소득 없음"],
+      "middle": ["중위소득", "평균 소득"],
+      "high": ["고소득", "소득 높음"]
+    }
+  },
+  "unknown_policy": {
+    "do_not_guess": true,
+    "rules": [
+      {
+        "field": "age",
+        "when": "정확한 숫자 나이가 없을 때",
+        "action": "age=null, unknown_fields에 age 추가"
+      },
+      {
+        "field": "region",
+        "when": "지역이 명시되지 않았거나 정규화할 수 없을 때",
+        "action": "region=unknown, unknown_fields에 region 추가"
+      },
+      {
+        "field": "income_level",
+        "when": "소득 정보가 명시되지 않았을 때",
+        "action": "income_level=unknown, unknown_fields에 income_level 추가"
+      },
+      {
+        "field": "household_head_status",
+        "when": "주거 관심 질문인데 세대주 여부가 명시되지 않았을 때",
+        "action": "condition_flags.household_head_status=unknown, unknown_fields에 household_head_status 추가"
+      }
+    ]
+  },
+  "policy_compare_rules_for_next_step": {
+    "hard_conditions": [
+      "age_out_of_range",
+      "region_mismatch",
+      "apply_status_closed",
+      "target_group_mismatch"
+    ],
+    "soft_conditions": [
+      "income_missing",
+      "household_head_unknown",
+      "housing_status_missing",
+      "employment_detail_missing"
+    ],
+    "decision_principle": "불가는 하드조건 위배일 때만 사용한다. 정보가 부족하면 확인 필요로 보낸다."
+  },
+  "interest_to_category": {
+    "housing": "주거",
+    "employment": "취업"
+  },
+  "unknown_field_labels": {
+    "age": "나이",
+    "region": "지역",
+    "employment_status": "취업상태",
+    "housing_status": "주거상태",
+    "income_level": "소득수준",
+    "household_head_status": "세대주 여부"
+  },
+  "schema_change_note": "기존 C_profile README의 profile_parser.py / eligibility_rules.json 산출물 방향을 유지하되, Day4 연결성을 위해 final 파일명과 schema_version을 명시했다. D는 raw_text, age, region, employment_status, housing_status, income_level, interest_tags, unknown_fields, result_status, reason_flags, need_more_info만 우선 사용하면 된다."
+}

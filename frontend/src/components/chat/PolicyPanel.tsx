@@ -1,11 +1,11 @@
 interface PolicyItem {
-  title: string;
-  category?: string;
-  description?: string;
-  eligibility?: string;
-  benefit?: string;
-  period?: string;
-  link?: string;
+  policy_id?: string;
+  policy_name?: string;
+  short_reason?: string;
+  support_type?: string;
+  apply_status?: string;
+  source_url?: string;
+  summary?: string;
 }
 
 interface PolicyPanelProps {
@@ -36,37 +36,36 @@ export default function PolicyPanel({ policyData }: PolicyPanelProps) {
       ) : (
         <div style={styles.list}>
           {policyData.map((item, i) => (
-            <div key={i} style={styles.card}>
-              {item.category && (
-                <span style={styles.badge}>{item.category}</span>
-              )}
-              <h3 style={styles.cardTitle}>{item.title}</h3>
-
-              {item.description && (
-                <p style={styles.cardDesc}>{item.description}</p>
+            <div key={item.policy_id ?? i} style={styles.card}>
+              {item.support_type && (
+                <span style={styles.badge}>{item.support_type}</span>
               )}
 
-              {item.eligibility && (
+              <h3 style={styles.cardTitle}>{item.policy_name}</h3>
+
+              {item.summary && <p style={styles.cardDesc}>{item.summary}</p>}
+
+              {item.short_reason && (
                 <div style={styles.infoRow}>
-                  <span style={styles.infoLabel}>신청 대상</span>
-                  <span style={styles.infoValue}>{item.eligibility}</span>
-                </div>
-              )}
-              {item.benefit && (
-                <div style={styles.infoRow}>
-                  <span style={styles.infoLabel}>지원 내용</span>
-                  <span style={styles.infoValue}>{item.benefit}</span>
-                </div>
-              )}
-              {item.period && (
-                <div style={styles.infoRow}>
-                  <span style={styles.infoLabel}>신청 기간</span>
-                  <span style={styles.infoValue}>{item.period}</span>
+                  <span style={styles.infoLabel}>추천 이유</span>
+                  <span style={styles.infoValue}>{item.short_reason}</span>
                 </div>
               )}
 
-              {item.link && (
-                <a href={item.link} target="_blank" rel="noreferrer" style={styles.linkBtn}>
+              {item.apply_status && (
+                <div style={styles.infoRow}>
+                  <span style={styles.infoLabel}>상태</span>
+                  <span style={styles.infoValue}>{item.apply_status}</span>
+                </div>
+              )}
+
+              {item.source_url && (
+                <a
+                  href={item.source_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={styles.linkBtn}
+                >
                   자세히 보기 →
                 </a>
               )}
