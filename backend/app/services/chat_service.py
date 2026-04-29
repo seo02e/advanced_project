@@ -78,7 +78,15 @@ class ChatService:
         elif previous_state.get("primary_interest") and not profile.get("primary_interest"):
             profile["primary_interest"] = previous_state.get("primary_interest")
             profile["interest_tags"] = previous_state.get("interest_tags", [])
-
+        
+        profile["raw_text"] = user_message
+        
+        profile.pop("profile_llm_enhancement", None)
+        profile.pop("reason_flags", None)
+        profile.pop("need_more_info", None)
+        profile.pop("result_status", None)
+        
+        
         self.repo.save_state(session_id, profile)
 
         # 7. assistant 메시지 저장
