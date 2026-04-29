@@ -58,17 +58,11 @@ export function useChat(
       const data = response.assistant_message?.data ?? response.answer ?? {};
 
       const policyPanelData =
-        data.recommended_policies?.length > 0
-          ? data.recommended_policies
-          : (data.retrieved_chunks?.map((chunk: any) => ({
-              policy_id: chunk.chunk_id,
-              policy_name: chunk.policy_name,
-              support_type: chunk.section_title,
-              summary: chunk.chunk_text,
-              short_reason: "B 기반 정책/공고 근거입니다.",
-              apply_status: "확인 필요",
-              source_url: chunk.source_url,
-            })) ?? []);
+        data.answer_blocks?.recommended?.length > 0
+          ? data.answer_blocks.recommended
+          : data.recommended_policies?.length > 0
+            ? data.recommended_policies
+            : [];
 
       setPolicyData?.(policyPanelData);
     } catch (err) {

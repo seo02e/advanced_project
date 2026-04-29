@@ -1,8 +1,6 @@
 from app.repositories.session_repository import SessionRepository
 from app.services.session_service import SessionService
-from app.ai_modules.C_profile.profile_parser_final import parse_profile
-from app.ai_modules.D_retrieval.rag_pipeline import generate_answer
-
+from app.ai_modules.D_retrieval.rag_pipeline import answer_question
 
 def build_display_text(answer: dict) -> str:
     policies = answer.get("recommended_policies", [])
@@ -50,16 +48,16 @@ class ChatService:
         }
         self.repo.append_message(session_id, user_data)
 
-        profile = parse_profile(user_message)
+        answer = answer_question(user_message)
+
+        profile = answer.get("profile_used", {})
         self.repo.save_state(session_id, profile)
 
-        answer = generate_answer(profile)
-
-        answer["display_text"] = build_display_text(answer)
+        
 
         assistant_data = {
             "role": "assistant",
-            "raw_text": answer["display_text"],
+            "raw_text": answer.get("answer_text", ""),
             "data": answer,
         }
         self.repo.append_message(session_id, assistant_data)

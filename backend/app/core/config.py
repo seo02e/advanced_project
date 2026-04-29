@@ -13,8 +13,16 @@ class Settings(BaseSettings):
     REDIS_DB: int = 0 # 하나의 서버에서 여러 개 논리적 db사용 가능한데 기본값이 0이라는 뜻
     SESSION_TTL_SECONDS: int = 1800 #세션 만료 시간을 의미. (초 단위) : setex() 또는  expire()로 TTL 설정시 사용
 
+
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-5.4-mini"
+    ENABLE_LLM_API: int = 0
+    ENABLE_PROFILE_LLM_API: int = 0
+    YOUTH_API_KEY: str = ""
+    
     class Config:
         env_file = ".env" # .env파일을 읽어서 환경 변수를 로드하도록 지정하는 설정
+        extra = "ignore"
 
 
 settings = Settings() # 다른 파일에서 호출 할 수 있도록 인스턴스 생성

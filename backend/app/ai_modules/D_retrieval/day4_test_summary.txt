@@ -1,0 +1,91 @@
+# Youth-Sync Day4 Test Summary
+
+목적: A~D 서비스 코어 기준 1~5단계 동작 확인
+
+================================================================================
+CASE 1
+질문: 서울 사는 27세 무주택 구직자인데 월세 지원 받을 수 있을까?
+결과상태: 확인 필요
+관심분야: housing
+추천정책 수: 5
+검색 chunk 수: 3
+검색방식: hybrid_bm25_dense
+Dense 상태: implemented_sentence_transformer
+Dense 모델: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+LLM 상태: skipped_disabled_enable_llm_api_not_1
+LLM 모델: 없음
+추가확인: 소득수준, 세대주 여부
+상위 정책:
+- 행복주택 / source=B / eligibility=확인 필요 / missing=소득수준
+- 청년매입임대주택 / source=B / eligibility=확인 필요 / missing=소득수준
+- 기숙사형 청년주택 / source=B / eligibility=확인 필요 / missing=소득수준
+
+================================================================================
+CASE 2
+질문: 경기도 거주 25세 중소기업 재직자인데 취업 지원 정책이 있을까?
+결과상태: 확인 필요
+관심분야: employment
+추천정책 수: 5
+검색 chunk 수: 0
+검색방식: none
+Dense 상태: not_applicable
+Dense 모델: 없음
+LLM 상태: skipped_disabled_enable_llm_api_not_1
+LLM 모델: 없음
+추가확인: 소득수준
+상위 정책:
+- 2026년 평택 청년-기업 이어드림 사업 / source=A / eligibility=maybe / missing=없음
+- 경기청년 해외진출(일본) 사업 / source=A / eligibility=maybe / missing=없음
+- 직장적응 지원 / source=A / eligibility=maybe / missing=없음
+
+================================================================================
+CASE 3
+질문: 서울 거주 31세 직장인인데 청년 정책 대상이 아직 되나
+결과상태: 확인 필요
+관심분야: unknown
+추천정책 수: 0
+검색 chunk 수: 0
+검색방식: none
+Dense 상태: not_applicable
+Dense 모델: 없음
+LLM 상태: skipped_disabled_enable_llm_api_not_1
+LLM 모델: 없음
+추가확인: 소득수준, 관심분야
+상위 정책:
+- 없음
+
+================================================================================
+CASE 4
+질문: 올해 퇴사한 28세 자취생인데 월세가 부담돼
+결과상태: 확인 필요
+관심분야: housing
+추천정책 수: 5
+검색 chunk 수: 3
+검색방식: hybrid_bm25_dense
+Dense 상태: implemented_sentence_transformer
+Dense 모델: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+LLM 상태: skipped_disabled_enable_llm_api_not_1
+LLM 모델: 없음
+추가확인: 지역, 소득수준, 세대주 여부, 무주택 여부
+상위 정책:
+- 미혼청년 주거급여 분리지급 / source=A / eligibility=확인 필요 / missing=지역
+- 청년월세지원 / source=A / eligibility=확인 필요 / missing=지역
+- 청년 주거급여 분리지급 / source=A / eligibility=확인 필요 / missing=지역
+
+================================================================================
+CASE 5
+질문: 무주택인데 세대주는 아니야. 주거 지원이 가능해?
+결과상태: 확인 필요
+관심분야: housing
+추천정책 수: 5
+검색 chunk 수: 3
+검색방식: hybrid_bm25_dense
+Dense 상태: implemented_sentence_transformer
+Dense 모델: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+LLM 상태: skipped_disabled_enable_llm_api_not_1
+LLM 모델: 없음
+추가확인: 나이, 지역, 취업상태, 소득수준
+상위 정책:
+- 청년주택드림청약통장 / source=A / eligibility=확인 필요 / missing=나이, 지역, 소득수준
+- 전세보증금반환보증 보증료 지원 / source=A / eligibility=확인 필요 / missing=나이, 지역
+- 대학생 연합생활관(은행권,고양) / source=A / eligibility=확인 필요 / missing=나이, 지역

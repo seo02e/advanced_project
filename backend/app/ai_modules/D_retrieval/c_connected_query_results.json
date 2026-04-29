@@ -132,13 +132,13 @@
     }
   },
   {
-    "raw_text": "경기도 사는 25살 취준생인데 취업지원 정책 알려줘. 소득은 잘 모르겠어.",
+    "raw_text": "경기도 거주 25세 중소기업 재직자인데 취업 지원 정책이 있을까?",
     "parsed_profile": {
       "schema_version": "c_profile_v1",
-      "raw_text": "경기도 사는 25살 취준생인데 취업지원 정책 알려줘. 소득은 잘 모르겠어.",
+      "raw_text": "경기도 거주 25세 중소기업 재직자인데 취업 지원 정책이 있을까?",
       "age": 25,
       "region": "경기",
-      "employment_status": "job_seeking",
+      "employment_status": "employed",
       "housing_status": "unknown",
       "income_level": "unknown",
       "interest_tags": [
@@ -162,10 +162,10 @@
       "result_status": "확인 필요",
       "profile_used": {
         "schema_version": "c_profile_v1",
-        "raw_text": "경기도 사는 25살 취준생인데 취업지원 정책 알려줘. 소득은 잘 모르겠어.",
+        "raw_text": "경기도 거주 25세 중소기업 재직자인데 취업 지원 정책이 있을까?",
         "age": 25,
         "region": "경기",
-        "employment_status": "job_seeking",
+        "employment_status": "employed",
         "housing_status": "unknown",
         "income_level": "unknown",
         "interest_tags": [
@@ -187,15 +187,6 @@
       },
       "recommended_policies": [
         {
-          "policy_id": "20260406005400212500",
-          "policy_name": "(인천환경공단)청년 체험형 인턴 운영",
-          "short_reason": "연령 조건 후보에 포함됩니다, 경기 지역 또는 전국 대상 후보입니다, 관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
-          "support_type": "취업지원",
-          "apply_status": "always",
-          "source_url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=336",
-          "summary": "미취업 청년에게 환경기초시설 직무 체험 기회 제공"
-        },
-        {
           "policy_id": "20260406005400212448",
           "policy_name": "(옹진군) 청년 자격증 응시료 지원",
           "short_reason": "연령 조건 후보에 포함됩니다, 경기 지역 또는 전국 대상 후보입니다, 관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
@@ -203,15 +194,6 @@
           "apply_status": "always",
           "source_url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=407",
           "summary": "취업에 어려움을 겪고 있는 인천 청년에게 자격증 응시료 지원을 통한 경제적 부담 경감 및 사회진입 활성화 도모"
-        },
-        {
-          "policy_id": "20260406005400212407",
-          "policy_name": "(남동구) 청년도전지원사업",
-          "short_reason": "연령 조건 후보에 포함됩니다, 경기 지역 또는 전국 대상 후보입니다, 관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
-          "support_type": "취업지원",
-          "apply_status": "always",
-          "source_url": "",
-          "summary": "구직단념청년 등을 대상으로 맞춤형 역량강화 프로그램을 제공하여 청년의 구직의욕을 고취하고, 노동시장 참여 및 취업 촉진을 지원하는 고용노동부 공모사업"
         },
         {
           "policy_id": "20260406005400212397",
@@ -230,6 +212,24 @@
           "apply_status": "open",
           "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=117174&mid=0401020100",
           "summary": "창의적인 창업 아이템을 가진 청년창업자를 발굴 선정하여 지속가능성을 갖춘 기업으로 성장할 수 있도록 지원"
+        },
+        {
+          "policy_id": "20260326005400212293",
+          "policy_name": "2026년 평택시 청년창업 금융지원사업 이차보전 지원",
+          "short_reason": "연령 조건 후보에 포함됩니다, 경기 지역 또는 전국 대상 후보입니다, 관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "open",
+          "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=115172&mid=0401020100",
+          "summary": "이자 상한 부담의 어려움을 겪는 청년창업자의 융자 이자 차액 지원으로 창업을 활성화 하고 고물가, 고금리로 경영난을 겪고 있는 청년 창업자의 자금난 해소"
+        },
+        {
+          "policy_id": "20260326005400212292",
+          "policy_name": "2026년 평택시 청년창업자 금융지원사업",
+          "short_reason": "연령 조건 후보에 포함됩니다, 경기 지역 또는 전국 대상 후보입니다, 관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "open",
+          "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=115172&mid=0401020100",
+          "summary": "자금력 및 담보력이 부족한 청년창업자 대상 특례보증을 통한 신용대출 지원으로 청년일자리 기반구축 및 창업생태계 조성에 기여"
         }
       ],
       "retrieved_chunks": [],
@@ -244,10 +244,6 @@
       ],
       "citations": [
         {
-          "policy_name": "(인천환경공단)청년 체험형 인턴 운영",
-          "source_url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=336"
-        },
-        {
           "policy_name": "(옹진군) 청년 자격증 응시료 지원",
           "source_url": "https://youth.incheon.go.kr/youthpolicy/youthPolicyInfoDetail.do?poly_seq=407"
         },
@@ -258,12 +254,20 @@
         {
           "policy_name": "2026년 평택시 우수초기창업자 지원사업 운영",
           "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=117174&mid=0401020100"
+        },
+        {
+          "policy_name": "2026년 평택시 청년창업 금융지원사업 이차보전 지원",
+          "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=115172&mid=0401020100"
+        },
+        {
+          "policy_name": "2026년 평택시 청년창업자 금융지원사업",
+          "source_url": "https://www.pyeongtaek.go.kr/pyeongtaek/saeol/gosi/view.do?notAncmtMgtNo=115172&mid=0401020100"
         }
       ],
       "next_action": "추가 확인 항목을 입력하면 더 정확하게 가능 여부를 좁힐 수 있습니다.",
       "debug": {
         "policy_count_total": 313,
-        "policy_count_matched": 52,
+        "policy_count_matched": 37,
         "primary_interest": "employment",
         "allowed_categories": [
           "취업"
@@ -275,20 +279,21 @@
     }
   },
   {
-    "raw_text": "부모님이랑 살고 있고 29세야. 서울 청년 주거 정책 받을 수 있어?",
+    "raw_text": "부모님 집에 사는 29세 취준생인데 주거 지원이 있을까?",
     "parsed_profile": {
       "schema_version": "c_profile_v1",
-      "raw_text": "부모님이랑 살고 있고 29세야. 서울 청년 주거 정책 받을 수 있어?",
+      "raw_text": "부모님 집에 사는 29세 취준생인데 주거 지원이 있을까?",
       "age": 29,
-      "region": "서울",
-      "employment_status": "unknown",
+      "region": "unknown",
+      "employment_status": "job_seeking",
       "housing_status": "living_with_parents",
       "income_level": "unknown",
       "interest_tags": [
-        "housing"
+        "housing",
+        "employment"
       ],
       "unknown_fields": [
-        "employment_status",
+        "region",
         "income_level",
         "household_head_status"
       ],
@@ -297,12 +302,12 @@
       },
       "result_status": "확인 필요",
       "reason_flags": [
-        "employment_status_missing",
+        "region_missing",
         "income_missing",
         "household_head_unknown"
       ],
       "need_more_info": [
-        "취업상태",
+        "지역",
         "소득수준",
         "세대주 여부"
       ]
@@ -311,17 +316,18 @@
       "result_status": "확인 필요",
       "profile_used": {
         "schema_version": "c_profile_v1",
-        "raw_text": "부모님이랑 살고 있고 29세야. 서울 청년 주거 정책 받을 수 있어?",
+        "raw_text": "부모님 집에 사는 29세 취준생인데 주거 지원이 있을까?",
         "age": 29,
-        "region": "서울",
-        "employment_status": "unknown",
+        "region": "unknown",
+        "employment_status": "job_seeking",
         "housing_status": "living_with_parents",
         "income_level": "unknown",
         "interest_tags": [
-          "housing"
+          "housing",
+          "employment"
         ],
         "unknown_fields": [
-          "employment_status",
+          "region",
           "income_level",
           "household_head_status"
         ],
@@ -330,12 +336,12 @@
         },
         "result_status": "확인 필요",
         "reason_flags": [
-          "employment_status_missing",
+          "region_missing",
           "income_missing",
           "household_head_unknown"
         ],
         "need_more_info": [
-          "취업상태",
+          "지역",
           "소득수준",
           "세대주 여부"
         ]
@@ -387,7 +393,7 @@
       ],
       "why_recommended": "주거 관심 질문으로 분류했지만, 현재 A 정책 테이블에서 조건에 맞는 주거 정책 후보를 찾지 못했습니다.",
       "need_more_info": [
-        "취업상태",
+        "지역",
         "소득수준",
         "세대주 여부",
         "무주택 여부"
@@ -413,57 +419,71 @@
     }
   },
   {
-    "raw_text": "서울 거주 26세 취준생인데 지금 신청 가능한 취업 정책 추천해줘.",
+    "raw_text": "지방에서 서울로 취업 준비 중인 24세인데 주거랑 취업 둘 다 보고 싶어",
     "parsed_profile": {
       "schema_version": "c_profile_v1",
-      "raw_text": "서울 거주 26세 취준생인데 지금 신청 가능한 취업 정책 추천해줘.",
-      "age": 26,
+      "raw_text": "지방에서 서울로 취업 준비 중인 24세인데 주거랑 취업 둘 다 보고 싶어",
+      "age": 24,
       "region": "서울",
       "employment_status": "job_seeking",
       "housing_status": "unknown",
       "income_level": "unknown",
       "interest_tags": [
+        "housing",
         "employment"
       ],
       "unknown_fields": [
-        "income_level"
+        "housing_status",
+        "income_level",
+        "household_head_status"
       ],
       "condition_flags": {
         "household_head_status": "unknown"
       },
       "result_status": "확인 필요",
       "reason_flags": [
-        "income_missing"
+        "housing_status_missing",
+        "income_missing",
+        "household_head_unknown"
       ],
       "need_more_info": [
-        "소득수준"
+        "주거상태",
+        "소득수준",
+        "세대주 여부"
       ]
     },
     "answer": {
       "result_status": "확인 필요",
       "profile_used": {
         "schema_version": "c_profile_v1",
-        "raw_text": "서울 거주 26세 취준생인데 지금 신청 가능한 취업 정책 추천해줘.",
-        "age": 26,
+        "raw_text": "지방에서 서울로 취업 준비 중인 24세인데 주거랑 취업 둘 다 보고 싶어",
+        "age": 24,
         "region": "서울",
         "employment_status": "job_seeking",
         "housing_status": "unknown",
         "income_level": "unknown",
         "interest_tags": [
+          "housing",
           "employment"
         ],
         "unknown_fields": [
-          "income_level"
+          "housing_status",
+          "income_level",
+          "household_head_status"
         ],
         "condition_flags": {
           "household_head_status": "unknown"
         },
         "result_status": "확인 필요",
         "reason_flags": [
-          "income_missing"
+          "housing_status_missing",
+          "income_missing",
+          "household_head_unknown"
         ],
         "need_more_info": [
-          "소득수준"
+          "주거상태",
+          "소득수준",
+          "세대주 여부"
         ]
       },
       "recommended_policies": [
@@ -516,7 +536,10 @@
       "retrieved_chunks": [],
       "why_recommended": "사용자의 나이, 지역, 관심 분야를 기준으로 A 정책 테이블에서 후보 정책을 추렸습니다.",
       "need_more_info": [
-        "소득수준"
+        "주거상태",
+        "소득수준",
+        "세대주 여부",
+        "무주택 여부"
       ],
       "caution_notes": [
         "현재 결과는 A 정책 메타데이터 기준 1차 후보입니다.",
@@ -556,20 +579,21 @@
     }
   },
   {
-    "raw_text": "나이는 31살이고 자취 중이야. 지역은 서울인데 주거 지원 받을 수 있어?",
+    "raw_text": "올해 퇴사한 28세 자취생인데 월세가 부담돼",
     "parsed_profile": {
       "schema_version": "c_profile_v1",
-      "raw_text": "나이는 31살이고 자취 중이야. 지역은 서울인데 주거 지원 받을 수 있어?",
-      "age": 31,
-      "region": "서울",
-      "employment_status": "unknown",
+      "raw_text": "올해 퇴사한 28세 자취생인데 월세가 부담돼",
+      "age": 28,
+      "region": "unknown",
+      "employment_status": "unemployed",
       "housing_status": "renting",
       "income_level": "unknown",
       "interest_tags": [
-        "housing"
+        "housing",
+        "employment"
       ],
       "unknown_fields": [
-        "employment_status",
+        "region",
         "income_level",
         "household_head_status"
       ],
@@ -578,12 +602,12 @@
       },
       "result_status": "확인 필요",
       "reason_flags": [
-        "employment_status_missing",
+        "region_missing",
         "income_missing",
         "household_head_unknown"
       ],
       "need_more_info": [
-        "취업상태",
+        "지역",
         "소득수준",
         "세대주 여부"
       ]
@@ -592,17 +616,18 @@
       "result_status": "확인 필요",
       "profile_used": {
         "schema_version": "c_profile_v1",
-        "raw_text": "나이는 31살이고 자취 중이야. 지역은 서울인데 주거 지원 받을 수 있어?",
-        "age": 31,
-        "region": "서울",
-        "employment_status": "unknown",
+        "raw_text": "올해 퇴사한 28세 자취생인데 월세가 부담돼",
+        "age": 28,
+        "region": "unknown",
+        "employment_status": "unemployed",
         "housing_status": "renting",
         "income_level": "unknown",
         "interest_tags": [
-          "housing"
+          "housing",
+          "employment"
         ],
         "unknown_fields": [
-          "employment_status",
+          "region",
           "income_level",
           "household_head_status"
         ],
@@ -611,12 +636,12 @@
         },
         "result_status": "확인 필요",
         "reason_flags": [
-          "employment_status_missing",
+          "region_missing",
           "income_missing",
           "household_head_unknown"
         ],
         "need_more_info": [
-          "취업상태",
+          "지역",
           "소득수준",
           "세대주 여부"
         ]
@@ -668,7 +693,7 @@
       ],
       "why_recommended": "주거 관심 질문으로 분류했지만, 현재 A 정책 테이블에서 조건에 맞는 주거 정책 후보를 찾지 못했습니다.",
       "need_more_info": [
-        "취업상태",
+        "지역",
         "소득수준",
         "세대주 여부",
         "무주택 여부"
@@ -690,6 +715,637 @@
         "policy_csv_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\A_policy_handover_v2\\policy_master_final.csv",
         "chunk_file_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\B_chunks_handover_v1\\housing_chunks_final.jsonl",
         "chunk_count_retrieved": 3
+      }
+    }
+  },
+  {
+    "raw_text": "서울 거주 31세 직장인인데 청년 정책 대상이 아직 되나",
+    "parsed_profile": {
+      "schema_version": "c_profile_v1",
+      "raw_text": "서울 거주 31세 직장인인데 청년 정책 대상이 아직 되나",
+      "age": 31,
+      "region": "서울",
+      "employment_status": "employed",
+      "housing_status": "unknown",
+      "income_level": "unknown",
+      "interest_tags": [],
+      "unknown_fields": [
+        "income_level"
+      ],
+      "condition_flags": {
+        "household_head_status": "unknown"
+      },
+      "result_status": "확인 필요",
+      "reason_flags": [
+        "income_missing"
+      ],
+      "need_more_info": [
+        "소득수준"
+      ]
+    },
+    "answer": {
+      "result_status": "확인 필요",
+      "profile_used": {
+        "schema_version": "c_profile_v1",
+        "raw_text": "서울 거주 31세 직장인인데 청년 정책 대상이 아직 되나",
+        "age": 31,
+        "region": "서울",
+        "employment_status": "employed",
+        "housing_status": "unknown",
+        "income_level": "unknown",
+        "interest_tags": [],
+        "unknown_fields": [
+          "income_level"
+        ],
+        "condition_flags": {
+          "household_head_status": "unknown"
+        },
+        "result_status": "확인 필요",
+        "reason_flags": [
+          "income_missing"
+        ],
+        "need_more_info": [
+          "소득수준"
+        ]
+      },
+      "recommended_policies": [],
+      "retrieved_chunks": [],
+      "why_recommended": "관심 분야가 명확하지 않아 정책 후보를 넓게 추천하지 않았습니다.",
+      "need_more_info": [
+        "소득수준"
+      ],
+      "caution_notes": [
+        "현재 결과는 A 정책 메타데이터 기준 1차 후보입니다.",
+        "최종 자격은 소득, 세대주 여부, 세부 공고문 조건 확인이 필요합니다.",
+        "source_url이 없는 정책은 citations에 포함하지 않았습니다."
+      ],
+      "citations": [],
+      "next_action": "주거, 취업, 창업, 생활지원 중 어떤 분야의 정책을 보고 싶은지 먼저 선택해 주세요.",
+      "debug": {
+        "policy_count_total": 313,
+        "policy_count_matched": 0,
+        "primary_interest": "unknown",
+        "allowed_categories": [],
+        "policy_csv_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\A_policy_handover_v2\\policy_master_final.csv",
+        "chunk_file_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\B_chunks_handover_v1\\housing_chunks_final.jsonl",
+        "chunk_count_retrieved": 0
+      }
+    }
+  },
+  {
+    "raw_text": "무주택인데 세대주는 아니야. 주거 지원이 가능해?",
+    "parsed_profile": {
+      "schema_version": "c_profile_v1",
+      "raw_text": "무주택인데 세대주는 아니야. 주거 지원이 가능해?",
+      "age": null,
+      "region": "unknown",
+      "employment_status": "unknown",
+      "housing_status": "homeless",
+      "income_level": "unknown",
+      "interest_tags": [
+        "housing"
+      ],
+      "unknown_fields": [
+        "age",
+        "region",
+        "employment_status",
+        "income_level"
+      ],
+      "condition_flags": {
+        "household_head_status": "no"
+      },
+      "result_status": "확인 필요",
+      "reason_flags": [
+        "age_missing",
+        "region_missing",
+        "employment_status_missing",
+        "income_missing"
+      ],
+      "need_more_info": [
+        "나이",
+        "지역",
+        "취업상태",
+        "소득수준"
+      ]
+    },
+    "answer": {
+      "result_status": "확인 필요",
+      "profile_used": {
+        "schema_version": "c_profile_v1",
+        "raw_text": "무주택인데 세대주는 아니야. 주거 지원이 가능해?",
+        "age": null,
+        "region": "unknown",
+        "employment_status": "unknown",
+        "housing_status": "homeless",
+        "income_level": "unknown",
+        "interest_tags": [
+          "housing"
+        ],
+        "unknown_fields": [
+          "age",
+          "region",
+          "employment_status",
+          "income_level"
+        ],
+        "condition_flags": {
+          "household_head_status": "no"
+        },
+        "result_status": "확인 필요",
+        "reason_flags": [
+          "age_missing",
+          "region_missing",
+          "employment_status_missing",
+          "income_missing"
+        ],
+        "need_more_info": [
+          "나이",
+          "지역",
+          "취업상태",
+          "소득수준"
+        ]
+      },
+      "recommended_policies": [],
+      "retrieved_chunks": [
+        {
+          "chunk_id": "BH001_01",
+          "policy_id": "BH001",
+          "policy_name": "청년 주거지원 공통 확인사항",
+          "issuing_org": "Youth-Sync handover",
+          "source_doc_name": "B_housing_handover_v1",
+          "source_url": "",
+          "section_title": "지원 대상",
+          "chunk_text": "[청년 주거지원 공통 확인사항 | 지원 대상] 청년 주거지원 정책은 일반적으로 나이, 거주지역, 무주택 여부, 소득수준, 세대주 여부 등 조건 확인이 필요합니다. 현재 정보만으로 최종 가능 여부를 단정하지 않고 확인 필요로 처리합니다.",
+          "chunk_order": 1,
+          "has_table": false,
+          "doc_type": "handover_stub",
+          "created_from": "B_housing_handover_v1"
+        },
+        {
+          "chunk_id": "BH001_02",
+          "policy_id": "BH001",
+          "policy_name": "청년 주거지원 공통 확인사항",
+          "issuing_org": "Youth-Sync handover",
+          "source_doc_name": "B_housing_handover_v1",
+          "source_url": "",
+          "section_title": "월세 지원 확인사항",
+          "chunk_text": "[청년 주거지원 공통 확인사항 | 월세 지원 확인사항] 월세 지원 여부를 판단하려면 실제 월세 거주 여부, 임대차계약 상태, 보증금 또는 월세 금액, 소득수준, 무주택 여부 확인이 필요합니다.",
+          "chunk_order": 2,
+          "has_table": false,
+          "doc_type": "handover_stub",
+          "created_from": "B_housing_handover_v1"
+        },
+        {
+          "chunk_id": "BH001_03",
+          "policy_id": "BH001",
+          "policy_name": "청년 주거지원 공통 확인사항",
+          "issuing_org": "Youth-Sync handover",
+          "source_doc_name": "B_housing_handover_v1",
+          "source_url": "",
+          "section_title": "무주택 및 세대 조건",
+          "chunk_text": "[청년 주거지원 공통 확인사항 | 무주택 및 세대 조건] 주거지원 정책은 무주택 여부, 세대주 여부, 부모와의 동거 여부, 독립가구 여부 등 세대 관련 조건이 중요한 경우가 많습니다. 해당 정보가 없으면 확인 필요로 남깁니다.",
+          "chunk_order": 3,
+          "has_table": false,
+          "doc_type": "handover_stub",
+          "created_from": "B_housing_handover_v1"
+        }
+      ],
+      "why_recommended": "주거 관심 질문으로 분류했지만, 현재 A 정책 테이블에서 조건에 맞는 주거 정책 후보를 찾지 못했습니다.",
+      "need_more_info": [
+        "나이",
+        "지역",
+        "취업상태",
+        "소득수준"
+      ],
+      "caution_notes": [
+        "현재 결과는 A 정책 메타데이터 기준 1차 후보입니다.",
+        "최종 자격은 소득, 세대주 여부, 세부 공고문 조건 확인이 필요합니다.",
+        "source_url이 없는 정책은 citations에 포함하지 않았습니다."
+      ],
+      "citations": [],
+      "next_action": "현재 A 정책 테이블에 주거 정책 후보가 부족합니다. 주거 정책 데이터가 병합되면 다시 조회하세요.",
+      "debug": {
+        "policy_count_total": 313,
+        "policy_count_matched": 0,
+        "primary_interest": "housing",
+        "allowed_categories": [
+          "주거"
+        ],
+        "policy_csv_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\A_policy_handover_v2\\policy_master_final.csv",
+        "chunk_file_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\B_chunks_handover_v1\\housing_chunks_final.jsonl",
+        "chunk_count_retrieved": 3
+      }
+    }
+  },
+  {
+    "raw_text": "취업 준비 중인데 소득이 거의 없고 부모님과 같이 살아",
+    "parsed_profile": {
+      "schema_version": "c_profile_v1",
+      "raw_text": "취업 준비 중인데 소득이 거의 없고 부모님과 같이 살아",
+      "age": null,
+      "region": "unknown",
+      "employment_status": "job_seeking",
+      "housing_status": "living_with_parents",
+      "income_level": "unknown",
+      "interest_tags": [
+        "employment",
+        "housing"
+      ],
+      "unknown_fields": [
+        "age",
+        "region",
+        "income_level",
+        "household_head_status"
+      ],
+      "condition_flags": {
+        "household_head_status": "unknown"
+      },
+      "result_status": "확인 필요",
+      "reason_flags": [
+        "age_missing",
+        "region_missing",
+        "income_missing",
+        "household_head_unknown"
+      ],
+      "need_more_info": [
+        "나이",
+        "지역",
+        "소득수준",
+        "세대주 여부"
+      ]
+    },
+    "answer": {
+      "result_status": "확인 필요",
+      "profile_used": {
+        "schema_version": "c_profile_v1",
+        "raw_text": "취업 준비 중인데 소득이 거의 없고 부모님과 같이 살아",
+        "age": null,
+        "region": "unknown",
+        "employment_status": "job_seeking",
+        "housing_status": "living_with_parents",
+        "income_level": "unknown",
+        "interest_tags": [
+          "employment",
+          "housing"
+        ],
+        "unknown_fields": [
+          "age",
+          "region",
+          "income_level",
+          "household_head_status"
+        ],
+        "condition_flags": {
+          "household_head_status": "unknown"
+        },
+        "result_status": "확인 필요",
+        "reason_flags": [
+          "age_missing",
+          "region_missing",
+          "income_missing",
+          "household_head_unknown"
+        ],
+        "need_more_info": [
+          "나이",
+          "지역",
+          "소득수준",
+          "세대주 여부"
+        ]
+      },
+      "recommended_policies": [
+        {
+          "policy_id": "20260417005400112768",
+          "policy_name": "벤처기업 공동채용 지원사",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "취업지원",
+          "apply_status": "always",
+          "source_url": "https://www.venture.or.kr/home/kor/M748473882/business/contents/index.do?idx=cb00d1a0008a85e71a41b8741facbffe71a547009cdc82b6a17d02db013fb623&idx2=cb00d1a0008a85e71a41b8741facbffe6345b0b94089980f84385e748ce0fc81",
+          "summary": "채용수요가 있는 벤처기업들이 합동으로 취업포탈 사이트에 취업 공고 게시 및 채용박람회 등을 통해 벤처기업이 우수 인재채용을 지"
+        },
+        {
+          "policy_id": "20260417005400112767",
+          "policy_name": "참 괜찮은 강소기업 선정 및 취업연계",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "취업지원",
+          "apply_status": "always",
+          "source_url": "https://www.smes.go.kr/gsmb/main",
+          "summary": "구직자들이 선호할만한 우수 중소기업을 발굴하고 채용 정보 제공 및 매칭 지원을 통해 중소기업 일자리 미스매치 완화"
+        },
+        {
+          "policy_id": "20260417005400112766",
+          "policy_name": "스타트업 원스톱 지원센터",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "always",
+          "source_url": "https://www.k-startup.go.kr/onestop/main/index.do",
+          "summary": "기술창업 기반의 창업가가 직면하는 법률, 세무, 경영 등 복합적인 애로해결 가이드, 전문가 매칭, 상담비용 지원 등 '원스톱'으로 상담 서비스를 지원합니다."
+        },
+        {
+          "policy_id": "20260416005400112764",
+          "policy_name": "2026년도 창업중심대학 대학발 (예비)창업기업 모집 공고",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "always",
+          "source_url": "https://www.k-startup.go.kr/web/contents/bizpbanc-deadline.do?pbancClssCd=PBC010&schStr=%EC%B0%BD%EC%97%85%EC%A4%91%EC%8B%AC%EB%8C%80%ED%95%99&schM=view&pbancSn=176498",
+          "summary": "대학의 창업 인프라를 활용하여 우수한 창업아이템을 보유한 대학발 (예비)창업기업의 사업화를 지원"
+        },
+        {
+          "policy_id": "20260416005400112763",
+          "policy_name": "재도전성공패키지",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "always",
+          "source_url": "https://www.k-startup.go.kr/web/contents/webCMRCZN.do?schM=view&id=170007",
+          "summary": "성실한 실패 경험과 우수한 아이템을 바탕으로 성장 가능성이 높은 (예비)재창업기업을 발굴하고, 패키지형 재창업 지원"
+        }
+      ],
+      "retrieved_chunks": [],
+      "why_recommended": "사용자의 나이, 지역, 관심 분야를 기준으로 A 정책 테이블에서 후보 정책을 추렸습니다.",
+      "need_more_info": [
+        "나이",
+        "지역",
+        "소득수준",
+        "세대주 여부",
+        "무주택 여부"
+      ],
+      "caution_notes": [
+        "현재 결과는 A 정책 메타데이터 기준 1차 후보입니다.",
+        "최종 자격은 소득, 세대주 여부, 세부 공고문 조건 확인이 필요합니다.",
+        "source_url이 없는 정책은 citations에 포함하지 않았습니다."
+      ],
+      "citations": [
+        {
+          "policy_name": "벤처기업 공동채용 지원사",
+          "source_url": "https://www.venture.or.kr/home/kor/M748473882/business/contents/index.do?idx=cb00d1a0008a85e71a41b8741facbffe71a547009cdc82b6a17d02db013fb623&idx2=cb00d1a0008a85e71a41b8741facbffe6345b0b94089980f84385e748ce0fc81"
+        },
+        {
+          "policy_name": "참 괜찮은 강소기업 선정 및 취업연계",
+          "source_url": "https://www.smes.go.kr/gsmb/main"
+        },
+        {
+          "policy_name": "스타트업 원스톱 지원센터",
+          "source_url": "https://www.k-startup.go.kr/onestop/main/index.do"
+        },
+        {
+          "policy_name": "2026년도 창업중심대학 대학발 (예비)창업기업 모집 공고",
+          "source_url": "https://www.k-startup.go.kr/web/contents/bizpbanc-deadline.do?pbancClssCd=PBC010&schStr=%EC%B0%BD%EC%97%85%EC%A4%91%EC%8B%AC%EB%8C%80%ED%95%99&schM=view&pbancSn=176498"
+        },
+        {
+          "policy_name": "재도전성공패키지",
+          "source_url": "https://www.k-startup.go.kr/web/contents/webCMRCZN.do?schM=view&id=170007"
+        }
+      ],
+      "next_action": "추가 확인 항목을 입력하면 더 정확하게 가능 여부를 좁힐 수 있습니다.",
+      "debug": {
+        "policy_count_total": 313,
+        "policy_count_matched": 194,
+        "primary_interest": "employment",
+        "allowed_categories": [
+          "취업"
+        ],
+        "policy_csv_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\A_policy_handover_v2\\policy_master_final.csv",
+        "chunk_file_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\B_chunks_handover_v1\\housing_chunks_final.jsonl",
+        "chunk_count_retrieved": 0
+      }
+    }
+  },
+  {
+    "raw_text": "신청 마감 안 된 정책만 보고 싶어. 서울 거주 26세야",
+    "parsed_profile": {
+      "schema_version": "c_profile_v1",
+      "raw_text": "신청 마감 안 된 정책만 보고 싶어. 서울 거주 26세야",
+      "age": 26,
+      "region": "서울",
+      "employment_status": "unknown",
+      "housing_status": "unknown",
+      "income_level": "unknown",
+      "interest_tags": [],
+      "unknown_fields": [
+        "employment_status",
+        "income_level"
+      ],
+      "condition_flags": {
+        "household_head_status": "unknown"
+      },
+      "result_status": "확인 필요",
+      "reason_flags": [
+        "employment_status_missing",
+        "income_missing"
+      ],
+      "need_more_info": [
+        "취업상태",
+        "소득수준"
+      ]
+    },
+    "answer": {
+      "result_status": "확인 필요",
+      "profile_used": {
+        "schema_version": "c_profile_v1",
+        "raw_text": "신청 마감 안 된 정책만 보고 싶어. 서울 거주 26세야",
+        "age": 26,
+        "region": "서울",
+        "employment_status": "unknown",
+        "housing_status": "unknown",
+        "income_level": "unknown",
+        "interest_tags": [],
+        "unknown_fields": [
+          "employment_status",
+          "income_level"
+        ],
+        "condition_flags": {
+          "household_head_status": "unknown"
+        },
+        "result_status": "확인 필요",
+        "reason_flags": [
+          "employment_status_missing",
+          "income_missing"
+        ],
+        "need_more_info": [
+          "취업상태",
+          "소득수준"
+        ]
+      },
+      "recommended_policies": [],
+      "retrieved_chunks": [],
+      "why_recommended": "관심 분야가 명확하지 않아 정책 후보를 넓게 추천하지 않았습니다.",
+      "need_more_info": [
+        "취업상태",
+        "소득수준"
+      ],
+      "caution_notes": [
+        "현재 결과는 A 정책 메타데이터 기준 1차 후보입니다.",
+        "최종 자격은 소득, 세대주 여부, 세부 공고문 조건 확인이 필요합니다.",
+        "source_url이 없는 정책은 citations에 포함하지 않았습니다."
+      ],
+      "citations": [],
+      "next_action": "주거, 취업, 창업, 생활지원 중 어떤 분야의 정책을 보고 싶은지 먼저 선택해 주세요.",
+      "debug": {
+        "policy_count_total": 313,
+        "policy_count_matched": 0,
+        "primary_interest": "unknown",
+        "allowed_categories": [],
+        "policy_csv_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\A_policy_handover_v2\\policy_master_final.csv",
+        "chunk_file_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\B_chunks_handover_v1\\housing_chunks_final.jsonl",
+        "chunk_count_retrieved": 0
+      }
+    }
+  },
+  {
+    "raw_text": "정규직 재직 중인데 이직 준비 중이야. 취업 지원 대상이 되나",
+    "parsed_profile": {
+      "schema_version": "c_profile_v1",
+      "raw_text": "정규직 재직 중인데 이직 준비 중이야. 취업 지원 대상이 되나",
+      "age": null,
+      "region": "unknown",
+      "employment_status": "employed",
+      "housing_status": "unknown",
+      "income_level": "unknown",
+      "interest_tags": [
+        "employment"
+      ],
+      "unknown_fields": [
+        "age",
+        "region",
+        "income_level"
+      ],
+      "condition_flags": {
+        "household_head_status": "unknown"
+      },
+      "result_status": "확인 필요",
+      "reason_flags": [
+        "age_missing",
+        "region_missing",
+        "income_missing"
+      ],
+      "need_more_info": [
+        "나이",
+        "지역",
+        "소득수준"
+      ]
+    },
+    "answer": {
+      "result_status": "확인 필요",
+      "profile_used": {
+        "schema_version": "c_profile_v1",
+        "raw_text": "정규직 재직 중인데 이직 준비 중이야. 취업 지원 대상이 되나",
+        "age": null,
+        "region": "unknown",
+        "employment_status": "employed",
+        "housing_status": "unknown",
+        "income_level": "unknown",
+        "interest_tags": [
+          "employment"
+        ],
+        "unknown_fields": [
+          "age",
+          "region",
+          "income_level"
+        ],
+        "condition_flags": {
+          "household_head_status": "unknown"
+        },
+        "result_status": "확인 필요",
+        "reason_flags": [
+          "age_missing",
+          "region_missing",
+          "income_missing"
+        ],
+        "need_more_info": [
+          "나이",
+          "지역",
+          "소득수준"
+        ]
+      },
+      "recommended_policies": [
+        {
+          "policy_id": "20260417005400112768",
+          "policy_name": "벤처기업 공동채용 지원사",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "취업지원",
+          "apply_status": "always",
+          "source_url": "https://www.venture.or.kr/home/kor/M748473882/business/contents/index.do?idx=cb00d1a0008a85e71a41b8741facbffe71a547009cdc82b6a17d02db013fb623&idx2=cb00d1a0008a85e71a41b8741facbffe6345b0b94089980f84385e748ce0fc81",
+          "summary": "채용수요가 있는 벤처기업들이 합동으로 취업포탈 사이트에 취업 공고 게시 및 채용박람회 등을 통해 벤처기업이 우수 인재채용을 지"
+        },
+        {
+          "policy_id": "20260417005400112766",
+          "policy_name": "스타트업 원스톱 지원센터",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "always",
+          "source_url": "https://www.k-startup.go.kr/onestop/main/index.do",
+          "summary": "기술창업 기반의 창업가가 직면하는 법률, 세무, 경영 등 복합적인 애로해결 가이드, 전문가 매칭, 상담비용 지원 등 '원스톱'으로 상담 서비스를 지원합니다."
+        },
+        {
+          "policy_id": "20260416005400112764",
+          "policy_name": "2026년도 창업중심대학 대학발 (예비)창업기업 모집 공고",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "always",
+          "source_url": "https://www.k-startup.go.kr/web/contents/bizpbanc-deadline.do?pbancClssCd=PBC010&schStr=%EC%B0%BD%EC%97%85%EC%A4%91%EC%8B%AC%EB%8C%80%ED%95%99&schM=view&pbancSn=176498",
+          "summary": "대학의 창업 인프라를 활용하여 우수한 창업아이템을 보유한 대학발 (예비)창업기업의 사업화를 지원"
+        },
+        {
+          "policy_id": "20260416005400112763",
+          "policy_name": "재도전성공패키지",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "always",
+          "source_url": "https://www.k-startup.go.kr/web/contents/webCMRCZN.do?schM=view&id=170007",
+          "summary": "성실한 실패 경험과 우수한 아이템을 바탕으로 성장 가능성이 높은 (예비)재창업기업을 발굴하고, 패키지형 재창업 지원"
+        },
+        {
+          "policy_id": "20260416005400112762",
+          "policy_name": "예비창업패키지",
+          "short_reason": "관심 분야와 정책 유형(취업)이 일치합니다, 신청 가능 상태 후보입니다.",
+          "support_type": "창업지원",
+          "apply_status": "always",
+          "source_url": "https://www.k-startup.go.kr/web/contents/bizpbanc-deadline.do?schM=view&pbancSn=176458",
+          "summary": "혁신적인 기술과 사업모델(BM)을 보유한 예비창업자를 발굴ㆍ지원"
+        }
+      ],
+      "retrieved_chunks": [],
+      "why_recommended": "사용자의 나이, 지역, 관심 분야를 기준으로 A 정책 테이블에서 후보 정책을 추렸습니다.",
+      "need_more_info": [
+        "나이",
+        "지역",
+        "소득수준"
+      ],
+      "caution_notes": [
+        "현재 결과는 A 정책 메타데이터 기준 1차 후보입니다.",
+        "최종 자격은 소득, 세대주 여부, 세부 공고문 조건 확인이 필요합니다.",
+        "source_url이 없는 정책은 citations에 포함하지 않았습니다."
+      ],
+      "citations": [
+        {
+          "policy_name": "벤처기업 공동채용 지원사",
+          "source_url": "https://www.venture.or.kr/home/kor/M748473882/business/contents/index.do?idx=cb00d1a0008a85e71a41b8741facbffe71a547009cdc82b6a17d02db013fb623&idx2=cb00d1a0008a85e71a41b8741facbffe6345b0b94089980f84385e748ce0fc81"
+        },
+        {
+          "policy_name": "스타트업 원스톱 지원센터",
+          "source_url": "https://www.k-startup.go.kr/onestop/main/index.do"
+        },
+        {
+          "policy_name": "2026년도 창업중심대학 대학발 (예비)창업기업 모집 공고",
+          "source_url": "https://www.k-startup.go.kr/web/contents/bizpbanc-deadline.do?pbancClssCd=PBC010&schStr=%EC%B0%BD%EC%97%85%EC%A4%91%EC%8B%AC%EB%8C%80%ED%95%99&schM=view&pbancSn=176498"
+        },
+        {
+          "policy_name": "재도전성공패키지",
+          "source_url": "https://www.k-startup.go.kr/web/contents/webCMRCZN.do?schM=view&id=170007"
+        },
+        {
+          "policy_name": "예비창업패키지",
+          "source_url": "https://www.k-startup.go.kr/web/contents/bizpbanc-deadline.do?schM=view&pbancSn=176458"
+        }
+      ],
+      "next_action": "추가 확인 항목을 입력하면 더 정확하게 가능 여부를 좁힐 수 있습니다.",
+      "debug": {
+        "policy_count_total": 313,
+        "policy_count_matched": 166,
+        "primary_interest": "employment",
+        "allowed_categories": [
+          "취업"
+        ],
+        "policy_csv_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\A_policy_handover_v2\\policy_master_final.csv",
+        "chunk_file_path": "C:\\Users\\human\\Desktop\\project\\advanced\\youth-sync-main\\youth-sync-main\\B_chunks_handover_v1\\housing_chunks_final.jsonl",
+        "chunk_count_retrieved": 0
       }
     }
   }
