@@ -69,9 +69,22 @@ HOUSING_KEYWORDS = {
 
 
 INCOME_KEYWORDS = {
-    "low": ["저소득", "소득 낮", "소득이 낮", "기초생활수급", "수급자", "차상위", "소득 없음", "소득이 없어"],
-    "middle": ["중위소득", "평균 소득"],
-    "high": ["고소득", "소득 높", "소득이 높"]
+    "low": [
+        "저소득", "소득 낮", "소득이 낮", "소득은 낮", "소득 낮은",
+        "별로 높지", "높지 않아", "많지 않아", "적은 편", "낮은 편",
+        "기초생활수급", "수급자", "차상위",
+        "소득 없", "소득이 없", "소득은 없",
+        "수입 없", "수입이 없", "수입 없", "수입은 없",
+        "무소득", "벌이 없음", "벌이가 없어"
+    ],
+    "middle": [
+        "중위소득", "평균 소득", "보통 소득", "소득 보통",
+        "평균 정도", "보통 정도"
+    ],
+    "high": [
+        "고소득", "소득 높", "소득이 높", "소득은 높",
+        "많이 벌", "수입 많", "연봉 높"
+    ]
 }
 
 
@@ -149,9 +162,91 @@ def extract_housing_status(text: str) -> str:
 
 
 def extract_income_level(text: str) -> str:
+    # 1. 모른다고 말한 경우는 unknown 유지
+    unknown_patterns = [
+        "소득은 잘 모르", "소득 잘 모르", "소득 모르",
+        "월소득 모르", "연소득 모르",
+        "수입은 잘 모르", "수입 잘 모르",
+        "아직 확인 안 했", "정확히는 몰라", "정확히 모르"
+    ]
+
+    if contains_any(text, unknown_patterns):
+        return "unknown"
+
+    # 2. 소득 없음/무소득 표현
+    no_income_patterns = [
+        "소득 없음", "소득이 없음", "소득은 없음",
+        "소득 없어", "소득이 없어", "소득은 없어",
+        "소득 없다", "소득이 없다", "소득은 없다",
+        "수입 없음", "수입이 없음", "수입은 없음",
+        "수입 없어", "수입이 없어", "수입은 없어",
+        "수입 없다", "수입이 없다", "수입은 없다",
+        "무소득", "벌이가 없어", "벌이 없음",
+        "돈을 안 벌", "돈 안 벌", "현재 수입 없어",
+        "백수라 소득", "구직 중이라 소득", "취준생이라 소득"
+    ]
+
+    if contains_any(text, no_income_patterns):
+        return "low"
+
+    # 3. 중위소득 표현
+    median_match = re.search(r"중위소득\s*(\d{1,3})\s*%", text)
+    if median_match:
+        percent = int(median_match.group(1))
+
+        if percent <= 100:
+            return "low"
+
+        if percent <= 150:
+            return "middle"
+
+        return "high"
+
+    # 4. 금액 표현
+    money_patterns = [
+        r"소득[^\d]{0,10}(\d{2,5})",
+        r"월소득[^\d]{0,10}(\d{2,5})",
+        r"월급[^\d]{0,10}(\d{2,5})",
+        r"수입[^\d]{0,10}(\d{2,5})",
+        r"연소득[^\d]{0,10}(\d{3,6})",
+        r"연봉[^\d]{0,10}(\d{3,6})",
+    ]
+
+    for pattern in money_patterns:
+        match = re.search(pattern, text)
+        if match:
+            amount = int(match.group(1))
+
+            # 월 단위처럼 보이는 표현
+            if any(word in text for word in ["월소득", "월급", "월 수입", "한달", "한 달"]):
+                if amount <= 250:
+                    return "low"
+                if amount <= 450:
+                    return "middle"
+                return "high"
+
+            # 연 단위처럼 보이는 표현
+            if any(word in text for word in ["연소득", "연봉", "연 수입", "1년", "일년"]):
+                if amount <= 3000:
+                    return "low"
+                if amount <= 5000:
+                    return "middle"
+                return "high"
+
+            # 단위가 애매하면 보수적으로 처리
+            if amount <= 3000:
+                return "low"
+
+            if amount <= 5000:
+                return "middle"
+
+            return "high"
+
+    # 5. 일반 키워드
     for level, keywords in INCOME_KEYWORDS.items():
         if contains_any(text, keywords):
             return level
+
     return "unknown"
 
 
