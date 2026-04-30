@@ -12,7 +12,6 @@ load_dotenv(BASE_DIR / ".env")
 from app.api import session, chat
 from app.core.logger import setup_logging
 from app.core.handlers import register_exception_handlers
-from app.core.exceptions import AppException
 
 app = FastAPI()
 
@@ -84,7 +83,6 @@ app.include_router(chat.router)
 @app.get("/")
 def root():
     return {"message": "chatbot backend is running"}
-
 
 if __name__ == "__main__":
     import uvicorn
