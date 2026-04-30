@@ -21,6 +21,51 @@ services:
     networks:
       - youth_network
 
+  adv_3team_redis:
+    image: redis:7
+    container_name: adv_3team_redis
+    restart: always
+
+    ports:
+      - "${REDIS_PORT}:6379"
+
+    ### 데이터 영속성 고려시 아래 주석 해제 ###
+    # volumes:
+    #   - "./database/redis_data:/data"
+
+    ## 모든 write 명령을 파일에 기록
+    # command: redis-server --appendonly yes
+
+    networks:
+      - youth_network
+
+### 주석은 아직 미구현 ###
+# adv_3team_backend:
+#   build:
+#     context: ./backend
+#     dockerfile: Dockerfile
+
+#   container_name: adv_3team_backend
+#   restart: always
+
+#   env_file:
+#     - .env
+
+#   ports:
+#     - "${BACKEND_PORT}:8000"
+
+#   depends_on:
+#     - adv_3team_db
+#     - adv_3team_redis
+
+#   volumes:
+#     - "./backend:/app"
+
+#   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+#   networks:
+#     - youth_network
+
 networks:
   youth_network:
     driver: bridge
