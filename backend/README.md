@@ -45,3 +45,23 @@ backend/
 ├── docker-compose.yml              # 서비스 오케스트레이션
 └── requirements.txt                # Python 의존성 목록
 ```
+
+## Python 가상환경 세팅
+
+### 가상환경 세팅이 완전 처음이라면!
+
+- anaconda / miniconda 설치
+- cmd 사용시 : conda init cmd.exe
+- powershell 사용시 : conda init powershell 실행
+- environment.yml 이 있는 위치까지 폴더 이동
+- conda env create -f environment.yml -n 가상환경명 입력
+  -> environment.yml 을 기준으로 가상환경 설치(이미 만들어진 가상환경을 복제하는 개념)
+  -> -n 가상환경명 누락시, environment.yml 에 있는 name 값으로 가상환경명 생성
+
+### 이미 가상환경이 구성이 되어있다면!
+
+- cmd 사용시 : conda init cmd.exe
+- powershell 사용시 : conda init powershell 실행
+- conda create -n 가상환경명 python=3.10
+- conda activate 가상환경명
+- pip install -r requirements.txt
