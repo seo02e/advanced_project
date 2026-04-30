@@ -64,4 +64,5 @@ backend/
 - powershell 사용시 : conda init powershell 실행
 - conda create -n 가상환경명 python=3.10
 - conda activate 가상환경명
+- requirements.txt 이 있는 위치까지 폴더 이동
 - pip install -r requirements.txt
