@@ -11,6 +11,8 @@ load_dotenv(BASE_DIR / ".env")
 
 from app.api import session, chat
 from app.core.logger import setup_logging
+from app.core.handlers import register_exception_handlers
+from app.core.exceptions import AppException
 
 app = FastAPI()
 
@@ -59,6 +61,9 @@ setup_logging()
 
 logger = logging.getLogger(__name__)
 logger.info("chatbot backend is running")
+
+## 전역 예외처리 세팅
+register_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,
