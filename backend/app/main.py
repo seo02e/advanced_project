@@ -4,6 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 # backend/.env 파일을 앱 시작 시 환경변수로 로드
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -11,10 +12,11 @@ load_dotenv(BASE_DIR / ".env")
 
 from app.api import session, chat
 from app.core.logger import setup_logging
-from app.core.handlers import register_exception_handlers
+from app.core.exception_handlers import register_exception_handlers
+from app.infra.scheduler import start_scheduler, end_scheduler
 
-app = FastAPI()
 
+################## 초기 세팅 ######################
 ## 로거 기본 세팅
 setup_logging()
 
@@ -59,11 +61,36 @@ setup_logging()
 """
 
 logger = logging.getLogger(__name__)
+
+
+## 스케줄러 설정
+# 시작과 종료의 로직을 하나의 함수로 관리하게 해줌
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("lifespan start")
+    logger.info("scheduler start")
+    
+    start_scheduler()
+    
+    yield # yield 기준 위로 서버 실행시 작동 / 아래로 서버 종료시 작동
+    
+    end_scheduler()
+    
+    logger.info("scheduler end")
+    logger.info("lifespan end")
+
+
+app = FastAPI(lifespan=lifespan)
+
+
 logger.info("chatbot backend is running")
+
 
 ## 전역 예외처리 세팅
 register_exception_handlers(app)
 
+
+## CORS 세팅
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -75,14 +102,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+##################################################
+
 
 app.include_router(session.router)
 app.include_router(chat.router)
 
+from app.services.policy_from_api_service import policy_from_api
+from typing import List, Dict, Any
+import pandas as pd
+import os
+from pathlib import Path
+
+
+@app.get("/test")
+def test_main():
+    policy_from_api()
 
 @app.get("/")
 def root():
     return {"message": "chatbot backend is running"}
+
 
 if __name__ == "__main__":
     import uvicorn
