@@ -3,6 +3,8 @@ from fastapi.responses import JSONResponse
 from app.core.exceptions import AppException
 # from sqlalchemy.exc import SQLAlchemyError
 
+
+## 전역 예외 처리 핸들러
 def register_exception_handlers(app):
     
     # 전역 핸들러 등록

@@ -2,7 +2,7 @@
 
 import json #파이썬 dict을 Json으로 바꿔서 저장하기 위해 호출
 from typing import Optional, List
-from app.core.redis import redis_client
+from app.infra.redis import redis_client
 from app.core.config import settings
 
 # 세션 하나에 대해 3종류의 데이터를 관리
