@@ -1,0 +1,63 @@
+{
+  "schema_version": "a_policy_final_v2",
+  "generated_at": "2026-05-02T17:44:25",
+  "final_columns": [
+    "policy_id",
+    "policy_name",
+    "category",
+    "subcategory",
+    "region_scope",
+    "age_min",
+    "age_max",
+    "employment_condition",
+    "housing_condition",
+    "income_condition_text",
+    "apply_start_date",
+    "apply_end_date",
+    "apply_status",
+    "source_org",
+    "source_url",
+    "summary",
+    "source_type"
+  ],
+  "value_standards": {
+    "category": [
+      "취업",
+      "주거",
+      "unknown"
+    ],
+    "region_scope": [
+      "서울",
+      "경기",
+      "all",
+      "기타"
+    ],
+    "apply_status": [
+      "open",
+      "closed",
+      "always",
+      "unknown"
+    ],
+    "employment_condition": [
+      "employed",
+      "job_seeking",
+      "student",
+      "all",
+      "unknown"
+    ],
+    "housing_condition": [
+      "homeless",
+      "living_with_parents",
+      "renting",
+      "household_head",
+      "all",
+      "unknown"
+    ]
+  },
+  "notes": [
+    "A_policy_handover_v2 기준 최종 D 전달용 schema입니다.",
+    "원천 카테고리 일자리는 취업으로 정규화합니다.",
+    "원천 카테고리 주거는 주거로 정규화합니다.",
+    "최종 파일명은 policy_master_final.csv로 고정합니다."
+  ]
+}
