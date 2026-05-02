@@ -50,6 +50,6 @@ def setup_logging():
         # %(stack_info)s	스택 정보
         # %(exc_info)s	    예외 정보
         
-        format="%(asctime)s - %(name)s [%(funcName)s] - %(message)s",
+        format="%(asctime)s - %(name)s [%(funcName)s] : %(lineno)d - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
