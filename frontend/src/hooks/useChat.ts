@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { getChatHistory, sendChatMessage } from "../api/chatApi";
-import type { ChatMessage } from "../types/chat";
+import type { ChatData, ChatMessage, Policy } from "../types/chat";
+import { dedupePolicies } from "../utils/policyDedup";
 
 export function useChat(
   enabled: boolean,
-  setPolicyData?: React.Dispatch<React.SetStateAction<any[]>>,
+  setPolicyData?: Dispatch<SetStateAction<Policy[]>>,
 ) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
@@ -17,14 +19,16 @@ export function useChat(
       setLoadingHistory(true);
       setError(null);
 
-      const history: any = await getChatHistory();
+      const history: unknown = await getChatHistory();
+      const nextMessages = normalizeHistory(history);
 
-      if (Array.isArray(history)) {
-        setMessages(history as ChatMessage[]);
-      } else if (history && Array.isArray(history.messages)) {
-        setMessages(history.messages);
-      } else {
-        setMessages([]);
+      setMessages(nextMessages);
+      const lastAssistant = [...nextMessages]
+        .reverse()
+        .find((message) => message.role === "assistant");
+
+      if (lastAssistant?.data) {
+        setPolicyData?.(selectPolicyPanelData(lastAssistant.data));
       }
     } catch {
       setMessages([]);
@@ -49,22 +53,15 @@ export function useChat(
     setError(null);
 
     try {
-      const response: any = await sendChatMessage(trimmedMessage);
+      const response = await sendChatMessage(trimmedMessage);
+      const assistantMessage = response.assistant_message;
 
-      if (response.assistant_message) {
-        setMessages((prev) => [...prev, response.assistant_message]);
+      if (assistantMessage) {
+        setMessages((prev) => [...prev, assistantMessage]);
       }
 
-      const data = response.assistant_message?.data ?? response.answer ?? {};
-
-      const policyPanelData =
-        data.answer_blocks?.recommended?.length > 0
-          ? data.answer_blocks.recommended
-          : data.recommended_policies?.length > 0
-            ? data.recommended_policies
-            : [];
-
-      setPolicyData?.(policyPanelData);
+      const data = (assistantMessage?.data ?? response.answer ?? {}) as ChatData;
+      setPolicyData?.(selectPolicyPanelData(data));
     } catch (err) {
       console.error(err);
       setError("메시지 전송에 실패했습니다.");
@@ -88,4 +85,41 @@ export function useChat(
     loadingHistory,
     error,
   };
+}
+
+function normalizeHistory(history: unknown): ChatMessage[] {
+  if (Array.isArray(history)) {
+    return history as ChatMessage[];
+  }
+
+  if (
+    history &&
+    typeof history === "object" &&
+    "messages" in history &&
+    Array.isArray(history.messages)
+  ) {
+    return history.messages as ChatMessage[];
+  }
+
+  return [];
+}
+
+function selectPolicyPanelData(data: ChatData): Policy[] {
+  if (hasItems(data.answer_blocks?.recommended)) {
+    return dedupePolicies(data.answer_blocks.recommended);
+  }
+
+  if (hasItems(data.recommended_policies)) {
+    return dedupePolicies(data.recommended_policies);
+  }
+
+  if (hasItems(data.retrieved_chunks)) {
+    return dedupePolicies(data.retrieved_chunks);
+  }
+
+  return [];
+}
+
+function hasItems<T>(value: T[] | undefined): value is T[] {
+  return Array.isArray(value) && value.length > 0;
 }

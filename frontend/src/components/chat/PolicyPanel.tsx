@@ -1,119 +1,116 @@
-interface PolicyItem {
-  policy_id?: string;
-  policy_name?: string;
-  source_layer?: "A" | "B" | string;
-  short_reason?: string;
-  recommend_reason?: string;
-  support_type?: string;
-  eligibility_status?: string;
-  missing_requirements?: string[];
-  apply_status?: string;
-  source_url?: string;
-  summary?: string;
-}
+import type { CSSProperties } from "react";
+import type { Policy } from "../../types/chat";
+import { dedupePolicies } from "../../utils/policyDedup";
 
 interface PolicyPanelProps {
-  policyData: PolicyItem[] | null;
+  policyData: Policy[] | null;
 }
 
 export default function PolicyPanel({ policyData }: PolicyPanelProps) {
-  const isEmpty = !policyData || policyData.length === 0;
+  const policies = dedupePolicies(policyData ?? []);
+  const isEmpty = policies.length === 0;
 
   return (
     <div style={styles.panel}>
       <div style={styles.panelHeader}>
-        <span style={styles.headerIcon}>📋</span>
+        <span style={styles.headerIcon}>📌</span>
         <span style={styles.headerTitle}>추천 정책 후보</span>
       </div>
 
       {isEmpty ? (
         <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>🔍</div>
+          <div style={styles.emptyIcon}>📄</div>
           <p style={styles.emptyTitle}>조회된 정책이 없습니다</p>
           <p style={styles.emptyDesc}>
-            챗봇에게 궁금한 청년 지원 정책을 질문하면
-            <br />
-            관련 정책이 여기에 표시됩니다.
+            청년 지원 정책에 대해 질문하면 관련 후보를 이곳에 표시합니다.
           </p>
         </div>
       ) : (
         <div style={styles.list}>
-          {policyData.map((item, i) => {
-            const reason = item.recommend_reason ?? item.short_reason;
-
-            const sourceLabel =
-              item.source_layer === "A"
-                ? "온통청년 API 기반 정책"
-                : item.source_layer === "B"
-                  ? "LH 공고문 기반 정책"
-                  : "출처 확인 필요";
-
-            return (
-              <div key={item.policy_id ?? i} style={styles.card}>
-                <div style={styles.badgeRow}>
-                  {item.support_type && (
-                    <span style={styles.badge}>{item.support_type}</span>
-                  )}
-                  <span style={styles.sourceBadge}>{sourceLabel}</span>
-                </div>
-
-                <h3 style={styles.cardTitle}>{item.policy_name}</h3>
-
-                {item.summary && <p style={styles.cardDesc}>{item.summary}</p>}
-
-                {reason && (
-                  <div style={styles.infoRow}>
-                    <span style={styles.infoLabel}>추천 이유</span>
-                    <span style={styles.infoValue}>{reason}</span>
-                  </div>
-                )}
-
-                {item.eligibility_status && (
-                  <div style={styles.infoRow}>
-                    <span style={styles.infoLabel}>자격</span>
-                    <span style={styles.infoValue}>
-                      {item.eligibility_status}
-                    </span>
-                  </div>
-                )}
-
-                {item.missing_requirements &&
-                  item.missing_requirements.length > 0 && (
-                    <div style={styles.infoRow}>
-                      <span style={styles.infoLabel}>부족 조건</span>
-                      <span style={styles.infoValue}>
-                        {item.missing_requirements.join(", ")}
-                      </span>
-                    </div>
-                  )}
-
-                {item.apply_status && (
-                  <div style={styles.infoRow}>
-                    <span style={styles.infoLabel}>상태</span>
-                    <span style={styles.infoValue}>{item.apply_status}</span>
-                  </div>
-                )}
-
-                {item.source_url && (
-                  <a
-                    href={item.source_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={styles.linkBtn}
-                  >
-                    자세히 보기 →
-                  </a>
-                )}
-              </div>
-            );
-          })}
+          {policies.map((item, index) => (
+            <PolicyCard key={item.policy_id ?? `${getPolicyName(item)}-${index}`} item={item} />
+          ))}
         </div>
       )}
     </div>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
+function PolicyCard({ item }: { item: Policy }) {
+  const name = getPolicyName(item);
+  const typeLabel = [item.support_type ?? item.policy_type, item.category ?? item.field]
+    .filter(Boolean)
+    .join(" / ");
+  const status = item.eligibility_status ?? item.apply_status ?? item.status;
+  const reason = item.recommend_reason ?? item.short_reason ?? item.reason;
+  const missingInfo = [...(item.missing_requirements ?? []), ...(item.need_more_info ?? [])];
+  const sourceLabel = getSourceLabel(item.source_layer);
+  const url = item.source_url ?? item.url;
+
+  return (
+    <article style={styles.card}>
+      <div style={styles.badgeRow}>
+        {typeLabel && <span style={styles.badge}>{typeLabel}</span>}
+        <span style={styles.sourceBadge}>{sourceLabel}</span>
+      </div>
+
+      <h3 style={styles.cardTitle}>{name}</h3>
+
+      {item.summary && <p style={styles.cardDesc}>{item.summary}</p>}
+
+      {status && (
+        <div style={styles.infoRow}>
+          <span style={styles.infoLabel}>상태</span>
+          <span style={styles.infoValue}>{status}</span>
+        </div>
+      )}
+
+      {reason && (
+        <div style={styles.infoRow}>
+          <span style={styles.infoLabel}>추천 이유</span>
+          <span style={styles.infoValue}>{reason}</span>
+        </div>
+      )}
+
+      {missingInfo.length > 0 && (
+        <div style={styles.infoBlock}>
+          <span style={styles.infoLabel}>추가 확인</span>
+          <div style={styles.chipRow}>
+            {missingInfo.map((value, index) => (
+              <span key={`${value}-${index}`} style={styles.chip}>
+                {value}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {url && (
+        <a href={url} target="_blank" rel="noreferrer" style={styles.linkBtn}>
+          자세히 보기
+        </a>
+      )}
+    </article>
+  );
+}
+
+function getPolicyName(item: Policy) {
+  return item.policy_name ?? item.title ?? item.name ?? "정책명 확인 필요";
+}
+
+function getSourceLabel(sourceLayer?: Policy["source_layer"]) {
+  if (sourceLayer === "A") {
+    return "공공 API";
+  }
+
+  if (sourceLayer === "B") {
+    return "공고문 기반";
+  }
+
+  return "출처 확인 필요";
+}
+
+const styles: Record<string, CSSProperties> = {
   panel: {
     height: "100%",
     display: "flex",
@@ -135,7 +132,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "14px",
     fontWeight: 700,
     color: "#1e293b",
-    letterSpacing: "-0.2px",
   },
   emptyState: {
     flex: 1,
@@ -151,7 +147,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   emptyIcon: {
     fontSize: "32px",
-    opacity: 0.4,
+    opacity: 0.5,
   },
   emptyTitle: {
     fontSize: "13px",
@@ -180,7 +176,7 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
     display: "flex",
     flexDirection: "column",
-    gap: "8px",
+    gap: "10px",
   },
   badgeRow: {
     display: "flex",
@@ -192,7 +188,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "2px 8px",
     borderRadius: "20px",
     backgroundColor: "#eff6ff",
-    color: "#3b82f6",
+    color: "#2563eb",
     fontSize: "11px",
     fontWeight: 600,
     width: "fit-content",
@@ -208,11 +204,11 @@ const styles: Record<string, React.CSSProperties> = {
     width: "fit-content",
   },
   cardTitle: {
-    fontSize: "13px",
-    fontWeight: 700,
+    fontSize: "14px",
+    fontWeight: 800,
     color: "#1e293b",
     margin: 0,
-    lineHeight: 1.4,
+    lineHeight: 1.45,
   },
   cardDesc: {
     fontSize: "12px",
@@ -221,26 +217,46 @@ const styles: Record<string, React.CSSProperties> = {
     margin: 0,
   },
   infoRow: {
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns: "72px 1fr",
+    gap: "8px",
+    fontSize: "12px",
+  },
+  infoBlock: {
+    display: "grid",
+    gridTemplateColumns: "72px 1fr",
     gap: "8px",
     fontSize: "12px",
   },
   infoLabel: {
     color: "#94a3b8",
-    fontWeight: 600,
+    fontWeight: 700,
     flexShrink: 0,
-    width: "60px",
   },
   infoValue: {
     color: "#475569",
-    lineHeight: "1.5",
+    lineHeight: "1.55",
+  },
+  chipRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "6px",
+  },
+  chip: {
+    padding: "3px 8px",
+    borderRadius: "999px",
+    backgroundColor: "#fff7ed",
+    color: "#c2410c",
+    fontSize: "11px",
+    fontWeight: 600,
   },
   linkBtn: {
     display: "inline-block",
-    marginTop: "4px",
+    width: "fit-content",
+    marginTop: "2px",
     fontSize: "12px",
-    fontWeight: 600,
-    color: "#6baffc",
+    fontWeight: 700,
+    color: "#2563eb",
     textDecoration: "none",
   },
 };
