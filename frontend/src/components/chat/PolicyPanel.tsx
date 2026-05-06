@@ -21,9 +21,9 @@ export default function PolicyPanel({ policyData }: PolicyPanelProps) {
       {isEmpty ? (
         <div style={styles.emptyState}>
           <div style={styles.emptyIcon}>📄</div>
-          <p style={styles.emptyTitle}>조회된 정책이 없습니다</p>
+          <p style={styles.emptyTitle}>아직 추천 정책이 없습니다</p>
           <p style={styles.emptyDesc}>
-            청년 지원 정책에 대해 질문하면 관련 후보를 이곳에 표시합니다.
+            질문을 입력하면 조건에 맞는 정책 후보가 이곳에 표시됩니다.
           </p>
         </div>
       ) : (

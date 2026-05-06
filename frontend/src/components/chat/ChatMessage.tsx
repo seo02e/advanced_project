@@ -10,6 +10,7 @@ import { formatStatusLabel, formatStatusText } from "../../utils/statusLabels";
 
 interface ChatMessageProps {
   message: ChatMessageType;
+  onFillInput: (draftText: string) => void;
 }
 
 interface SourceLink {
@@ -17,7 +18,7 @@ interface SourceLink {
   href?: string;
 }
 
-export default function ChatMessage({ message }: ChatMessageProps) {
+export default function ChatMessage({ message, onFillInput }: ChatMessageProps) {
   const isUser = message.role === "user";
   const hasAnswerBlocks = Boolean(message.data?.answer_blocks);
 
@@ -48,6 +49,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           <AssistantAnswer
             answerBlocks={message.data?.answer_blocks}
             fallbackText={message.data?.answer_text ?? message.raw_text}
+            onFillInput={onFillInput}
           />
         )}
       </div>
@@ -58,23 +60,24 @@ export default function ChatMessage({ message }: ChatMessageProps) {
 function AssistantAnswer({
   answerBlocks,
   fallbackText,
+  onFillInput,
 }: {
   answerBlocks?: AnswerBlocks;
   fallbackText: string;
+  onFillInput: (draftText: string) => void;
 }) {
   if (!answerBlocks) {
     return <div>{formatStatusText(fallbackText)}</div>;
   }
 
   const recommended = dedupePolicies(answerBlocks.recommended);
-  const needMoreInfo = (answerBlocks.need_more_info ?? []).map(formatStatusText);
+  const rawNeedMoreInfo = answerBlocks.need_more_info ?? [];
+  const needMoreInfo = rawNeedMoreInfo.map(formatStatusText);
   const policyPreviews = recommended.slice(0, 2).map(toPolicyPreview);
   const sources = collectSources(answerBlocks.sources, recommended);
-  const summary = formatStatusText(answerBlocks.summary ?? fallbackText);
+  const summary = getSummaryText(answerBlocks.summary ?? fallbackText, needMoreInfo.length);
   const currentStatus = getCurrentStatus(recommended);
-  const nextAction = answerBlocks.next_action
-    ? formatNextActionText(answerBlocks.next_action)
-    : undefined;
+  const nextAction = getNextActionText(answerBlocks.next_action, needMoreInfo.length);
 
   return (
     <div style={styles.answerWrap}>
@@ -87,7 +90,9 @@ function AssistantAnswer({
 
       <div style={styles.summaryBar}>
         <span style={styles.summaryPill}>후보 {recommended.length}건</span>
-        <span style={styles.summaryPill}>추가 확인 {needMoreInfo.length}개</span>
+        <span style={styles.summaryPill}>
+          {needMoreInfo.length > 0 ? `추가 확인 ${needMoreInfo.length}개` : "입력정보 보완 없음"}
+        </span>
         <span style={styles.summaryPill}>현재 상태: {currentStatus}</span>
       </div>
 
@@ -123,6 +128,13 @@ function AssistantAnswer({
               </span>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={() => onFillInput(buildMissingInfoDraft(rawNeedMoreInfo))}
+            style={styles.fillButton}
+          >
+            조건 보완하기
+          </button>
         </section>
       )}
 
@@ -230,6 +242,14 @@ function truncateText(value: string, maxLength: number) {
   return normalized.length > maxLength ? `${normalized.slice(0, maxLength - 3)}...` : normalized;
 }
 
+function getSummaryText(value: string, needMoreInfoCount: number) {
+  if (needMoreInfoCount === 0) {
+    return "입력 조건 기준으로 정책 후보를 좁혔습니다. 최종 신청 가능 여부는 각 정책의 상세 조건과 공고를 확인해 주세요.";
+  }
+
+  return formatStatusText(value);
+}
+
 function formatNextActionText(value: string) {
   const formatted = formatStatusText(value);
   const genericMessage =
@@ -241,6 +261,34 @@ function formatNextActionText(value: string) {
         "나이, 지역, 소득수준을 알려주시면 각 정책의 가능성을 더 정확히 좁혀드릴 수 있습니다.",
       )
     : formatted;
+}
+
+function getNextActionText(value: string | undefined, needMoreInfoCount: number) {
+  if (needMoreInfoCount === 0) {
+    return "현재 입력 조건 기준으로 후보가 좁혀졌습니다. 각 정책의 상세 조건은 오른쪽 카드에서 확인해보세요.";
+  }
+
+  return value ? formatNextActionText(value) : undefined;
+}
+
+function buildMissingInfoDraft(items: string[]) {
+  const parts = items.map((item) => getMissingInfoPhrase(formatStatusText(item).trim()));
+  return `${parts.join(", ")}입니다.`;
+}
+
+function getMissingInfoPhrase(item: string) {
+  const templateMap: Record<string, string> = {
+    나이: "나이는 ___세",
+    지역: "지역은 ___",
+    소득수준: "소득수준은 월 ___만원",
+    "세대주 여부": "세대주 여부는 ___",
+    "무주택 여부": "무주택 여부는 ___",
+    주거상태: "현재 주거상태는 ___",
+    취업상태: "취업상태는 ___",
+    관심분야: "관심분야는 ___",
+  };
+
+  return templateMap[item] ?? `${item}은 ___`;
 }
 
 function isString(value: unknown): value is string {
@@ -369,6 +417,19 @@ const styles: Record<string, CSSProperties> = {
     color: "#2563eb",
     fontSize: "12px",
     fontWeight: 600,
+  },
+  fillButton: {
+    marginTop: "10px",
+    padding: "6px 10px",
+    borderRadius: "999px",
+    border: "1px solid #bfdbfe",
+    backgroundColor: "#eff6ff",
+    color: "#1d4ed8",
+    fontSize: "12px",
+    fontWeight: 800,
+    fontFamily: "inherit",
+    cursor: "pointer",
+    lineHeight: 1.4,
   },
   sourceList: {
     display: "flex",
