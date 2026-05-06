@@ -8,8 +8,9 @@ const STATUS_REPLACEMENTS: Array<[RegExp, string]> = [
   [/\balways\b/gi, "상시/마감 아님"],
 ];
 
-export function formatStatusLabel(value: string): string {
-  const normalized = value.trim().toLowerCase();
+export function formatStatusLabel(value: unknown): string {
+  const text = toSafeString(value);
+  const normalized = text.trim().toLowerCase();
 
   if (normalized === "eligible") {
     return "지원 가능성 높음";
@@ -31,12 +32,18 @@ export function formatStatusLabel(value: string): string {
     return "상시/마감 아님";
   }
 
-  return formatStatusText(value);
+  return formatStatusText(text);
 }
 
-export function formatStatusText(value: string): string {
+export function formatStatusText(value: unknown): string {
+  const safeValue = toSafeString(value);
+
   return STATUS_REPLACEMENTS.reduce(
     (text, [pattern, replacement]) => text.replace(pattern, replacement),
-    value,
+    safeValue,
   );
+}
+
+function toSafeString(value: unknown): string {
+  return typeof value === "string" ? value : "";
 }

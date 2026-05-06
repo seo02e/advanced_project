@@ -10,8 +10,14 @@ const SOURCE_LABELS: Array<[string, string]> = [
   ["smes.go.kr", "중소벤처기업부/중소기업 지원"],
 ];
 
-export function getSourceDisplayLabel(hostname: string): string {
-  const normalizedHost = hostname.replace(/^www\./, "").toLowerCase();
+export function getSourceDisplayLabel(hostname: unknown): string {
+  const normalizedHost =
+    typeof hostname === "string" ? hostname.replace(/^www\./, "").toLowerCase() : "";
+
+  if (!normalizedHost) {
+    return "출처";
+  }
+
   const match = SOURCE_LABELS.find(([domain]) => normalizedHost.endsWith(domain));
 
   if (!match) {

@@ -54,13 +54,13 @@ export function useChat(
 
     try {
       const response = await sendChatMessage(trimmedMessage);
-      const assistantMessage = response.assistant_message;
+      const assistantMessage = normalizeMessage(response?.assistant_message);
 
       if (assistantMessage) {
         setMessages((prev) => [...prev, assistantMessage]);
       }
 
-      const data = (assistantMessage?.data ?? response.answer ?? {}) as ChatData;
+      const data = normalizeChatData(assistantMessage?.data ?? response?.answer);
       setPolicyData?.(selectPolicyPanelData(data));
     } catch (err) {
       console.error(err);
@@ -89,7 +89,7 @@ export function useChat(
 
 function normalizeHistory(history: unknown): ChatMessage[] {
   if (Array.isArray(history)) {
-    return history as ChatMessage[];
+    return history.map(normalizeMessage).filter((message): message is ChatMessage => Boolean(message));
   }
 
   if (
@@ -98,15 +98,40 @@ function normalizeHistory(history: unknown): ChatMessage[] {
     "messages" in history &&
     Array.isArray(history.messages)
   ) {
-    return history.messages as ChatMessage[];
+    return history.messages
+      .map(normalizeMessage)
+      .filter((message): message is ChatMessage => Boolean(message));
   }
 
   return [];
 }
 
+function normalizeMessage(message: unknown): ChatMessage | null {
+  if (!message || typeof message !== "object") {
+    return null;
+  }
+
+  const candidate = message as Partial<ChatMessage>;
+  const role = candidate.role === "user" ? "user" : "assistant";
+  const rawText = typeof candidate.raw_text === "string" ? candidate.raw_text : "";
+
+  return {
+    role,
+    raw_text: rawText,
+    data: normalizeChatData(candidate.data),
+  };
+}
+
+function normalizeChatData(data: unknown): ChatData {
+  return data && typeof data === "object" ? (data as ChatData) : {};
+}
+
 function selectPolicyPanelData(data: ChatData): Policy[] {
-  if (hasItems(data.answer_blocks?.recommended)) {
-    return dedupePolicies(data.answer_blocks.recommended);
+  const answerBlocks =
+    data.answer_blocks && typeof data.answer_blocks === "object" ? data.answer_blocks : undefined;
+
+  if (hasItems(answerBlocks?.recommended)) {
+    return dedupePolicies(answerBlocks.recommended);
   }
 
   if (hasItems(data.recommended_policies)) {

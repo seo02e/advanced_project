@@ -1,4 +1,5 @@
-import type { CSSProperties } from "react";
+import { Component } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type {
   AnswerBlocks,
   ChatMessage as ChatMessageType,
@@ -19,8 +20,11 @@ interface SourceLink {
 }
 
 export default function ChatMessage({ message, onFillInput }: ChatMessageProps) {
-  const isUser = message.role === "user";
-  const hasAnswerBlocks = Boolean(message.data?.answer_blocks);
+  const isUser = message?.role === "user";
+  const rawText = safeString(message?.raw_text);
+  const answerBlocks = getSafeAnswerBlocks(message?.data?.answer_blocks);
+  const fallbackText = safeString(message?.data?.answer_text) || rawText;
+  const hasAnswerBlocks = Boolean(answerBlocks);
 
   return (
     <div
@@ -42,19 +46,44 @@ export default function ChatMessage({ message, onFillInput }: ChatMessageProps) 
         }}
       >
         {isUser ? (
-          <div>{message.raw_text}</div>
+          <div>{rawText}</div>
         ) : !hasAnswerBlocks ? (
-          <div>{formatStatusText(message.raw_text)}</div>
+          <div>{formatStatusText(rawText)}</div>
         ) : (
-          <AssistantAnswer
-            answerBlocks={message.data?.answer_blocks}
-            fallbackText={message.data?.answer_text ?? message.raw_text}
-            onFillInput={onFillInput}
-          />
+          <SafeStructuredAnswer fallbackText={fallbackText}>
+            <AssistantAnswer
+              answerBlocks={answerBlocks}
+              fallbackText={fallbackText}
+              onFillInput={onFillInput}
+            />
+          </SafeStructuredAnswer>
         )}
       </div>
     </div>
   );
+}
+
+class SafeStructuredAnswer extends Component<
+  { children: ReactNode; fallbackText: string },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("Structured assistant answer render failed", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>{formatStatusText(this.props.fallbackText)}</div>;
+    }
+
+    return this.props.children;
+  }
 }
 
 function AssistantAnswer({
@@ -71,13 +100,13 @@ function AssistantAnswer({
   }
 
   const recommended = dedupePolicies(answerBlocks.recommended);
-  const rawNeedMoreInfo = answerBlocks.need_more_info ?? [];
+  const rawNeedMoreInfo = safeStringArray(answerBlocks.need_more_info);
   const needMoreInfo = rawNeedMoreInfo.map(formatStatusText);
   const policyPreviews = recommended.slice(0, 2).map(toPolicyPreview);
   const sources = collectSources(answerBlocks.sources, recommended);
-  const summary = getSummaryText(answerBlocks.summary ?? fallbackText, needMoreInfo.length);
+  const summary = getSummaryText(safeString(answerBlocks.summary) || fallbackText, needMoreInfo.length);
   const currentStatus = getCurrentStatus(recommended);
-  const nextAction = getNextActionText(answerBlocks.next_action, needMoreInfo.length);
+  const nextAction = getNextActionText(needMoreInfo);
 
   return (
     <div style={styles.answerWrap}>
@@ -173,10 +202,10 @@ function AssistantAnswer({
   );
 }
 
-function collectSources(sources: string[] = [], policies: Policy[] = []): SourceLink[] {
+function collectSources(sources: unknown = [], policies: Policy[] = []): SourceLink[] {
   const seen = new Set<string>();
   const values = [
-    ...sources,
+    ...safeStringArray(sources),
     ...policies.map((policy) => policy.source_url ?? policy.url).filter(isString),
   ];
 
@@ -200,15 +229,25 @@ function toSourceLink(value: string, index: number): SourceLink {
       label: `${index}. ${getSourceDisplayLabel(url.hostname)}`,
     };
   } catch {
+    const label = value.length > 72 ? `${value.slice(0, 69)}...` : value;
+
     return {
-      label: `${index}. ${value.length > 72 ? `${value.slice(0, 69)}...` : value}`,
+      href: value.startsWith("http://") || value.startsWith("https://") ? value : undefined,
+      label: `${index}. ${label}`,
     };
   }
 }
 
 function toPolicyPreview(policy: Policy) {
-  const name = policy.policy_name ?? policy.name ?? policy.title ?? "정책명 확인 필요";
-  const rawReason = policy.short_reason ?? policy.recommend_reason ?? policy.reason ?? "";
+  const name =
+    safeString(policy.policy_name) ||
+    safeString(policy.name) ||
+    safeString(policy.title) ||
+    "정책명 확인 필요";
+  const rawReason =
+    safeString(policy.short_reason) ||
+    safeString(policy.recommend_reason) ||
+    safeString(policy.reason);
 
   return {
     name,
@@ -237,12 +276,12 @@ function getCurrentStatus(policies: Policy[]) {
   return "확인 필요";
 }
 
-function truncateText(value: string, maxLength: number) {
-  const normalized = value.replace(/\s+/g, " ").trim();
+function truncateText(value: unknown, maxLength: number) {
+  const normalized = safeString(value).replace(/\s+/g, " ").trim();
   return normalized.length > maxLength ? `${normalized.slice(0, maxLength - 3)}...` : normalized;
 }
 
-function getSummaryText(value: string, needMoreInfoCount: number) {
+function getSummaryText(value: unknown, needMoreInfoCount: number) {
   if (needMoreInfoCount === 0) {
     return "입력 조건 기준으로 정책 후보를 좁혔습니다. 최종 신청 가능 여부는 각 정책의 상세 조건과 공고를 확인해 주세요.";
   }
@@ -250,29 +289,22 @@ function getSummaryText(value: string, needMoreInfoCount: number) {
   return formatStatusText(value);
 }
 
-function formatNextActionText(value: string) {
-  const formatted = formatStatusText(value);
-  const genericMessage =
-    "추가 확인 항목을 입력하면 지원 가능성 높음 / 가능성 있음 / 확인 필요 / 대상 아님 범위를 더 좁힐 수 있습니다.";
-
-  return formatted.includes(genericMessage)
-    ? formatted.replace(
-        genericMessage,
-        "나이, 지역, 소득수준을 알려주시면 각 정책의 가능성을 더 정확히 좁혀드릴 수 있습니다.",
-      )
-    : formatted;
-}
-
-function getNextActionText(value: string | undefined, needMoreInfoCount: number) {
-  if (needMoreInfoCount === 0) {
+function getNextActionText(needMoreInfo: string[]) {
+  if (needMoreInfo.length === 0) {
     return "현재 입력 조건 기준으로 후보가 좁혀졌습니다. 각 정책의 상세 조건은 오른쪽 카드에서 확인해보세요.";
   }
 
-  return value ? formatNextActionText(value) : undefined;
+  const fields = needMoreInfo.join(", ");
+
+  if (fields === "나이, 지역, 소득수준") {
+    return `${fields}을 알려주시면 각 정책의 가능성을 더 정확히 좁혀드릴 수 있습니다.`;
+  }
+
+  return `${fields}를 알려주시면 정책 가능성을 더 정확히 좁혀드릴 수 있습니다.`;
 }
 
-function buildMissingInfoDraft(items: string[]) {
-  const parts = items.map((item) => getMissingInfoPhrase(formatStatusText(item).trim()));
+function buildMissingInfoDraft(items: unknown) {
+  const parts = safeStringArray(items).map((item) => getMissingInfoPhrase(formatStatusText(item).trim()));
   return `${parts.join(", ")}입니다.`;
 }
 
@@ -293,6 +325,18 @@ function getMissingInfoPhrase(item: string) {
 
 function isString(value: unknown): value is string {
   return typeof value === "string";
+}
+
+function safeString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function safeStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter(isString) : [];
+}
+
+function getSafeAnswerBlocks(value: unknown): AnswerBlocks | undefined {
+  return value && typeof value === "object" ? (value as AnswerBlocks) : undefined;
 }
 
 const styles: Record<string, CSSProperties> = {

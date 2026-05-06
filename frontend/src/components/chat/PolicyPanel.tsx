@@ -4,7 +4,7 @@ import { dedupePolicies } from "../../utils/policyDedup";
 import { formatStatusLabel, formatStatusText } from "../../utils/statusLabels";
 
 interface PolicyPanelProps {
-  policyData: Policy[] | null;
+  policyData: unknown;
 }
 
 export default function PolicyPanel({ policyData }: PolicyPanelProps) {
@@ -39,17 +39,27 @@ export default function PolicyPanel({ policyData }: PolicyPanelProps) {
 
 function PolicyCard({ item }: { item: Policy }) {
   const name = getPolicyName(item);
-  const typeLabel = [item.support_type ?? item.policy_type, item.category ?? item.field]
+  const typeLabel = [
+    safeString(item.support_type) || safeString(item.policy_type),
+    safeString(item.category) || safeString(item.field),
+  ]
     .filter(Boolean)
     .join(" / ");
-  const rawStatus = item.eligibility_status ?? item.apply_status ?? item.status;
+  const rawStatus =
+    safeString(item.eligibility_status) ||
+    safeString(item.apply_status) ||
+    safeString(item.status);
   const status = rawStatus ? formatStatusLabel(rawStatus) : undefined;
-  const reason = item.recommend_reason ?? item.short_reason ?? item.reason;
-  const missingInfo = [...(item.missing_requirements ?? []), ...(item.need_more_info ?? [])].map(
-    formatStatusText,
-  );
+  const reason =
+    safeString(item.recommend_reason) ||
+    safeString(item.short_reason) ||
+    safeString(item.reason);
+  const missingInfo = [
+    ...safeStringArray(item.missing_requirements),
+    ...safeStringArray(item.need_more_info),
+  ].map(formatStatusText);
   const sourceLabel = getSourceLabel(item.source_layer);
-  const url = item.source_url ?? item.url;
+  const url = safeString(item.source_url) || safeString(item.url);
 
   return (
     <article style={styles.card}>
@@ -60,7 +70,9 @@ function PolicyCard({ item }: { item: Policy }) {
 
       <h3 style={styles.cardTitle}>{name}</h3>
 
-      {item.summary && <p style={styles.cardDesc}>{formatStatusText(item.summary)}</p>}
+      {safeString(item.summary) && (
+        <p style={styles.cardDesc}>{formatStatusText(item.summary)}</p>
+      )}
 
       {status && (
         <div style={styles.infoRow}>
@@ -99,7 +111,12 @@ function PolicyCard({ item }: { item: Policy }) {
 }
 
 function getPolicyName(item: Policy) {
-  return item.policy_name ?? item.title ?? item.name ?? "정책명 확인 필요";
+  return (
+    safeString(item.policy_name) ||
+    safeString(item.title) ||
+    safeString(item.name) ||
+    "정책명 확인 필요"
+  );
 }
 
 function getSourceLabel(sourceLayer?: Policy["source_layer"]) {
@@ -112,6 +129,14 @@ function getSourceLabel(sourceLayer?: Policy["source_layer"]) {
   }
 
   return "출처 확인 필요";
+}
+
+function safeString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function safeStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
 const styles: Record<string, CSSProperties> = {

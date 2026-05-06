@@ -1,9 +1,10 @@
 import type { Policy } from "../types/chat";
 
-export function dedupePolicies(policies: Policy[] = []): Policy[] {
+export function dedupePolicies(policies: unknown = []): Policy[] {
   const seen = new Set<string>();
+  const safePolicies = Array.isArray(policies) ? policies.filter(isPolicyLike) : [];
 
-  return policies.filter((policy, index) => {
+  return safePolicies.filter((policy, index) => {
     const key = getPolicyDedupKey(policy, index);
     if (seen.has(key)) {
       return false;
@@ -12,6 +13,10 @@ export function dedupePolicies(policies: Policy[] = []): Policy[] {
     seen.add(key);
     return true;
   });
+}
+
+function isPolicyLike(value: unknown): value is Policy {
+  return Boolean(value && typeof value === "object");
 }
 
 function getPolicyDedupKey(policy: Policy, index: number): string {
