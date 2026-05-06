@@ -59,6 +59,101 @@ EMPLOYMENT_INTENT_KEYWORDS = [
     "취업", "구직", "취준", "일자리", "면접", "교육", "훈련", "채용", "청년수당", "창업"
 ]
 
+def has_housing_intent_text(raw_text: str) -> bool:
+    text = clean_value(raw_text)
+    return any(keyword in text for keyword in HOUSING_INTENT_KEYWORDS)
+
+
+def has_employment_intent_text(raw_text: str) -> bool:
+    text = clean_value(raw_text)
+    return any(keyword in text for keyword in EMPLOYMENT_INTENT_KEYWORDS)
+
+
+def get_effective_interests(profile: Dict[str, Any]) -> List[str]:
+    """
+    발표 전 안정화용 관심분야 보정.
+    - LLM primary_interest가 명확하면 우선 사용
+    - 단, 원문에 주거+취업이 함께 있으면 복합의도로 인정
+    """
+    raw_text = clean_value(profile.get("raw_text", ""))
+    interests: List[str] = []
+
+    primary_interest = get_profile_primary_interest(profile)
+    if primary_interest in ["housing", "employment", "startup", "life"]:
+        interests.append(primary_interest)
+
+    if has_housing_intent_text(raw_text) and "housing" not in interests:
+        interests.append("housing")
+
+    if has_employment_intent_text(raw_text) and "employment" not in interests:
+        interests.append("employment")
+
+    return interests
+
+
+def is_local_specific_policy(policy: Dict[str, Any]) -> bool:
+    """
+    지역이 불명확한 질문에서 특정 지자체 정책이 상단에 뜨는 것 방지.
+    """
+    policy_region = get_policy_region(policy)
+    name = get_policy_name(policy)
+    url = get_policy_source_url(policy)
+
+    if policy_region not in ["all", "전국", "unknown", ""]:
+        return True
+
+    local_keywords = [
+        "평택", "광주", "고양", "광산", "부산", "대구", "대전",
+        "울산", "세종", "강원", "충북", "충남", "전북", "전남",
+        "경북", "경남", "제주"
+    ]
+
+    local_url_keywords = [
+        "pyeongtaek", "gwangju", "goyang", "busan", "daegu",
+        "daejeon", "ulsan", "sejong", "jeju"
+    ]
+
+    return any(k in name for k in local_keywords) or any(k in url.lower() for k in local_url_keywords)
+
+
+def is_student_or_school_only_policy(policy: Dict[str, Any]) -> bool:
+    """
+    정규직/이직/일반 취준생에게 학생·고교·학과형 정책이 섞이는 것 방지.
+    """
+    text = " ".join([
+        get_policy_name(policy),
+        clean_value(policy.get("subcategory", "")),
+        get_policy_summary(policy),
+        clean_value(policy.get("employment_condition", "")),
+    ])
+
+    block_keywords = [
+        "고교", "고등학교", "특성화고", "마이스터고",
+        "대학생", "재학생", "학과", "기술사관", "장려금"
+    ]
+
+    return any(keyword in text for keyword in block_keywords)
+
+
+def is_company_side_policy(policy: Dict[str, Any]) -> bool:
+    """
+    사용자 개인에게 직접 지원되는 정책이 아니라 기업/기관 대상 성격이 강한 후보 감점.
+    """
+    text = " ".join([
+        get_policy_name(policy),
+        get_policy_summary(policy),
+        clean_value(policy.get("subcategory", "")),
+    ])
+
+    company_side_keywords = [
+        "기업인력애로센터", "벤처기업 공동채용", "참 괜찮은 강소기업",
+        "기업경쟁력강화", "기업 지원", "기업 대상"
+    ]
+
+    return any(keyword in text for keyword in company_side_keywords)
+
+
+
 
 def clean_value(value: Any) -> str:
     if value is None:
@@ -174,13 +269,13 @@ def get_profile_policy_intent_strength(profile: Dict[str, Any]) -> str:
 
 def should_block_broad_recommendation(profile: Dict[str, Any]) -> bool:
     """
-    관심분야가 불명확한 질문에서 넓은 정책 추천을 막는다.
-
-    예:
-    - "서울 거주 31세 직장인인데 청년 정책 대상이 아직 되나"
-      → 직장인이라는 상태값은 있지만, 취업/주거/창업 중 무엇을 원하는지 불명확
-      → 추천 정책을 바로 보여주지 않고 관심분야 확인 필요
+    관심분야가 완전히 없을 때만 넓은 추천을 막는다.
+    단, 원문에 주거/취업 키워드가 있으면 추천을 허용한다.
     """
+    interests = get_effective_interests(profile)
+    if interests:
+        return False
+
     primary_interest = detect_primary_interest(profile)
     intent_strength = get_profile_policy_intent_strength(profile)
 
@@ -268,15 +363,18 @@ def detect_primary_interest(profile: Dict[str, Any]) -> str:
     return "unknown"
 
 def get_allowed_categories_by_profile(profile: Dict[str, Any]) -> List[str]:
-    primary_interest = detect_primary_interest(profile)
+    interests = get_effective_interests(profile)
 
-    if primary_interest == "housing":
-        return ["주거"]
+    allowed: List[str] = []
 
-    if primary_interest == "employment":
-        return ["취업"]
+    if "housing" in interests:
+        allowed.append("주거")
 
-    return []
+    if "employment" in interests:
+        allowed.append("취업")
+        allowed.append("교육훈련")
+
+    return list(dict.fromkeys(allowed))
 
 
 def should_ask_interest_first(profile: Dict[str, Any]) -> bool:
@@ -724,6 +822,50 @@ def calculate_policy_match_score(profile: Dict[str, Any], policy: Dict[str, Any]
     if primary_interest == "housing" and source_layer == "B":
         score += 0.8
 
+    # ===== 발표 전 최소 안정화 보정 =====
+    effective_interests = get_effective_interests(profile)
+
+    # 1) 주거+취업 복합 의도 보정
+    if len(effective_interests) >= 2:
+        if "housing" in effective_interests and policy_category == "주거":
+            score += 3.0
+        if "employment" in effective_interests and policy_category in ["취업", "교육훈련"]:
+            score += 3.0
+
+    # 2) 지역 미확정 시 특정 지자체 정책 상단 노출 방지
+    if user_region == "unknown" and specific_region == "unknown" and is_local_specific_policy(policy):
+        score -= 7.0
+
+    # 3) 정규직/이직 준비자에게 학생·고교·학과형 정책 감점
+    if employment_status == "employed" and any(keyword in raw_text for keyword in ["이직", "정규직", "재직"]):
+        if is_student_or_school_only_policy(policy):
+            score -= 10.0
+        if is_company_side_policy(policy):
+            score -= 5.0
+
+    # 4) 일반 취준생에게 학생 전용/기업 대상 정책 과노출 방지
+    if employment_status in ["job_seeking", "unemployed"]:
+        user_is_student_context = any(keyword in raw_text for keyword in ["고교", "고등학생", "대학생", "재학생", "졸업예정"])
+        if is_student_or_school_only_policy(policy) and not user_is_student_context:
+            score -= 8.0
+        if is_company_side_policy(policy):
+            score -= 4.0
+
+    # 5) 취준/저소득/이직 질문에서 대표 개인지원 정책 우선
+    if "employment" in effective_interests:
+        personal_support_keywords = [
+            "국민취업지원", "내일배움", "청년도전", "취업성공",
+            "직업훈련", "구직촉진", "직장적응"
+        ]
+        if any(keyword in combined_text for keyword in personal_support_keywords):
+            score += 5.0
+
+    # 6) 월세 직접 질문에서 월세/주거급여 계열 우선
+    if "housing" in effective_interests and any(keyword in raw_text for keyword in ["월세", "월세가", "월세 지원", "월세 부담"]):
+        direct_rent_keywords = ["월세", "임대료", "주거급여", "주거비"]
+        if any(keyword in combined_text for keyword in direct_rent_keywords):
+            score += 4.0
+
     return round(score, 4)
 
 
@@ -947,9 +1089,9 @@ def retrieve_relevant_chunks(
     limit: int = 3,
     candidate_policy_ids: Optional[List[str]] = None,
 ) -> List[Dict[str, Any]]:
-    primary_interest = detect_primary_interest(profile)
-
-    if primary_interest != "housing":
+    
+    effective_interests = get_effective_interests(profile)
+    if "housing" not in effective_interests:
         return []
 
     chunks = read_housing_chunks()
@@ -1028,6 +1170,38 @@ def build_answer_blocks(
     primary_interest = detect_primary_interest(profile)
 
     if not recommended_policies:
+        raw_text = clean_value(profile.get("raw_text", ""))
+        age = profile.get("age")
+
+        # 발표 전 안정화:
+        # "청년 정책 대상이 아직 되나"처럼 연령 대상 여부를 묻는 질문은
+        # 정책 후보가 없어도 일반 연령 판단 답변을 먼저 제공한다.
+        if age is not None and any(
+            keyword in raw_text
+            for keyword in [
+                "청년 정책 대상",
+                "청년정책 대상",
+                "청년 정책 대상이",
+                "대상이 아직",
+                "대상 되나",
+                "아직 되나",
+            ]
+        ):
+            return {
+                "summary": (
+                    f"{age}세는 많은 청년정책에서 아직 대상 연령에 포함될 수 있습니다. "
+                    "다만 정책별로 만 34세 이하, 만 39세 이하처럼 기준이 다르기 때문에 "
+                    "관심 분야와 소득수준 확인이 필요합니다."
+                ),
+                "recommended": [],
+                "need_more_info": need_more_info,
+                "sources": [],
+                "next_action": (
+                    "주거, 취업, 창업, 생활지원 중 어떤 분야의 청년정책을 보고 싶은지 알려주시면 "
+                    "해당 분야 기준으로 대상 가능성을 더 좁혀드릴 수 있습니다."
+                ),
+            }
+
         if primary_interest == "unknown":
             return {
                 "summary": "관심 분야가 명확하지 않아 정책 후보를 넓게 추천하지 않았습니다.",
@@ -1044,6 +1218,7 @@ def build_answer_blocks(
             "sources": [],
             "next_action": "지역, 나이, 소득수준 등 확인 필요 정보를 보완하면 후보를 다시 좁힐 수 있습니다.",
         }
+
 
     recommended_blocks: List[Dict[str, Any]] = []
 
