@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Policy } from "../../types/chat";
 import { dedupePolicies } from "../../utils/policyDedup";
+import { formatStatusLabel, formatStatusText } from "../../utils/statusLabels";
 
 interface PolicyPanelProps {
   policyData: Policy[] | null;
@@ -41,9 +42,12 @@ function PolicyCard({ item }: { item: Policy }) {
   const typeLabel = [item.support_type ?? item.policy_type, item.category ?? item.field]
     .filter(Boolean)
     .join(" / ");
-  const status = item.eligibility_status ?? item.apply_status ?? item.status;
+  const rawStatus = item.eligibility_status ?? item.apply_status ?? item.status;
+  const status = rawStatus ? formatStatusLabel(rawStatus) : undefined;
   const reason = item.recommend_reason ?? item.short_reason ?? item.reason;
-  const missingInfo = [...(item.missing_requirements ?? []), ...(item.need_more_info ?? [])];
+  const missingInfo = [...(item.missing_requirements ?? []), ...(item.need_more_info ?? [])].map(
+    formatStatusText,
+  );
   const sourceLabel = getSourceLabel(item.source_layer);
   const url = item.source_url ?? item.url;
 
@@ -56,7 +60,7 @@ function PolicyCard({ item }: { item: Policy }) {
 
       <h3 style={styles.cardTitle}>{name}</h3>
 
-      {item.summary && <p style={styles.cardDesc}>{item.summary}</p>}
+      {item.summary && <p style={styles.cardDesc}>{formatStatusText(item.summary)}</p>}
 
       {status && (
         <div style={styles.infoRow}>
@@ -68,7 +72,7 @@ function PolicyCard({ item }: { item: Policy }) {
       {reason && (
         <div style={styles.infoRow}>
           <span style={styles.infoLabel}>추천 이유</span>
-          <span style={styles.infoValue}>{reason}</span>
+          <span style={styles.infoValue}>{formatStatusText(reason)}</span>
         </div>
       )}
 

@@ -4,7 +4,9 @@ import type {
   ChatMessage as ChatMessageType,
   Policy,
 } from "../../types/chat";
+import { getSourceDisplayLabel } from "../../utils/displayLabels";
 import { dedupePolicies } from "../../utils/policyDedup";
+import { formatStatusLabel, formatStatusText } from "../../utils/statusLabels";
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -38,8 +40,10 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           whiteSpace: isUser || !hasAnswerBlocks ? "pre-line" : "normal",
         }}
       >
-        {isUser || !hasAnswerBlocks ? (
+        {isUser ? (
           <div>{message.raw_text}</div>
+        ) : !hasAnswerBlocks ? (
+          <div>{formatStatusText(message.raw_text)}</div>
         ) : (
           <AssistantAnswer
             answerBlocks={message.data?.answer_blocks}
@@ -59,13 +63,18 @@ function AssistantAnswer({
   fallbackText: string;
 }) {
   if (!answerBlocks) {
-    return <div>{fallbackText}</div>;
+    return <div>{formatStatusText(fallbackText)}</div>;
   }
 
   const recommended = dedupePolicies(answerBlocks.recommended);
-  const needMoreInfo = answerBlocks.need_more_info ?? [];
+  const needMoreInfo = (answerBlocks.need_more_info ?? []).map(formatStatusText);
+  const policyPreviews = recommended.slice(0, 2).map(toPolicyPreview);
   const sources = collectSources(answerBlocks.sources, recommended);
-  const summary = answerBlocks.summary ?? fallbackText;
+  const summary = formatStatusText(answerBlocks.summary ?? fallbackText);
+  const currentStatus = getCurrentStatus(recommended);
+  const nextAction = answerBlocks.next_action
+    ? formatNextActionText(answerBlocks.next_action)
+    : undefined;
 
   return (
     <div style={styles.answerWrap}>
@@ -76,6 +85,12 @@ function AssistantAnswer({
         </section>
       )}
 
+      <div style={styles.summaryBar}>
+        <span style={styles.summaryPill}>후보 {recommended.length}건</span>
+        <span style={styles.summaryPill}>추가 확인 {needMoreInfo.length}개</span>
+        <span style={styles.summaryPill}>현재 상태: {currentStatus}</span>
+      </div>
+
       <section style={styles.infoBox}>
         <div style={styles.sectionTitle}>📌 추천 정책 후보</div>
         <p style={styles.mutedText}>
@@ -83,6 +98,19 @@ function AssistantAnswer({
             ? `${recommended.length}개의 정책 후보를 찾았습니다. 상세 목록은 오른쪽 추천 정책 후보 패널에서 확인하세요.`
             : "아직 추천 정책 후보가 없습니다. 조건을 조금 더 알려주면 후보를 좁힐 수 있습니다."}
         </p>
+        {policyPreviews.length > 0 && (
+          <div style={styles.previewBox}>
+            <div style={styles.previewTitle}>추천 정책 미리보기</div>
+            <div style={styles.previewList}>
+              {policyPreviews.map((preview, index) => (
+                <div key={`${preview.name}-${index}`} style={styles.previewItem}>
+                  <strong style={styles.previewName}>{preview.name}</strong>
+                  {preview.reason && <span>: {preview.reason}</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {needMoreInfo.length > 0 && (
@@ -123,10 +151,10 @@ function AssistantAnswer({
         </section>
       )}
 
-      {answerBlocks.next_action && (
+      {nextAction && (
         <section style={styles.nextActionBox}>
           <div style={styles.sectionTitle}>➡️ 다음 행동</div>
-          <p style={styles.answerText}>{answerBlocks.next_action}</p>
+          <p style={styles.answerText}>{nextAction}</p>
         </section>
       )}
     </div>
@@ -157,13 +185,62 @@ function toSourceLink(value: string, index: number): SourceLink {
     const url = new URL(value);
     return {
       href: value,
-      label: `${index}. ${url.hostname.replace(/^www\./, "")}`,
+      label: `${index}. ${getSourceDisplayLabel(url.hostname)}`,
     };
   } catch {
     return {
       label: `${index}. ${value.length > 72 ? `${value.slice(0, 69)}...` : value}`,
     };
   }
+}
+
+function toPolicyPreview(policy: Policy) {
+  const name = policy.policy_name ?? policy.name ?? policy.title ?? "정책명 확인 필요";
+  const rawReason = policy.short_reason ?? policy.recommend_reason ?? policy.reason ?? "";
+
+  return {
+    name,
+    reason: truncateText(formatStatusText(rawReason), 64),
+  };
+}
+
+function getCurrentStatus(policies: Policy[]) {
+  const statuses = policies
+    .map((policy) => policy.eligibility_status ?? policy.status)
+    .filter(isString)
+    .map(formatStatusLabel);
+
+  if (statuses.includes("지원 가능성 높음")) {
+    return "지원 가능성 높음";
+  }
+
+  if (statuses.includes("가능성 있음")) {
+    return "가능성 있음";
+  }
+
+  if (statuses.includes("대상 아님")) {
+    return "대상 아님";
+  }
+
+  return "확인 필요";
+}
+
+function truncateText(value: string, maxLength: number) {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  return normalized.length > maxLength ? `${normalized.slice(0, maxLength - 3)}...` : normalized;
+}
+
+function formatNextActionText(value: string) {
+  const formatted = formatStatusText(value);
+  const genericMessage =
+    "추가 확인 항목을 입력하면 지원 가능성 높음 / 가능성 있음 / 확인 필요 / 대상 아님 범위를 더 좁힐 수 있습니다.";
+
+  return formatted.includes(genericMessage)
+    ? formatted.replace(
+        genericMessage,
+        "나이, 지역, 소득수준을 알려주시면 각 정책의 가능성을 더 정확히 좁혀드릴 수 있습니다.",
+      )
+    : formatted;
 }
 
 function isString(value: unknown): value is string {
@@ -225,11 +302,54 @@ const styles: Record<string, CSSProperties> = {
     color: "#475569",
     margin: 0,
   },
+  summaryBar: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "6px",
+    padding: "10px 12px",
+    borderRadius: "12px",
+    backgroundColor: "#ffffff",
+    border: "1px solid #dbeafe",
+  },
+  summaryPill: {
+    padding: "4px 9px",
+    borderRadius: "999px",
+    backgroundColor: "#eff6ff",
+    color: "#1d4ed8",
+    fontSize: "12px",
+    fontWeight: 700,
+    lineHeight: 1.4,
+  },
   infoBox: {
     backgroundColor: "#ffffff",
     border: "1px solid #e2e8f0",
     borderRadius: "12px",
     padding: "12px",
+  },
+  previewBox: {
+    marginTop: "10px",
+    paddingTop: "10px",
+    borderTop: "1px solid #e2e8f0",
+  },
+  previewTitle: {
+    fontSize: "12px",
+    fontWeight: 800,
+    color: "#475569",
+    marginBottom: "6px",
+  },
+  previewList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+  previewItem: {
+    fontSize: "12px",
+    lineHeight: "1.55",
+    color: "#475569",
+  },
+  previewName: {
+    color: "#1e293b",
+    fontWeight: 800,
   },
   nextActionBox: {
     backgroundColor: "#f0f9ff",
