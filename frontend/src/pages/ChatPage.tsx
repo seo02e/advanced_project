@@ -49,8 +49,8 @@ export default function ChatPage() {
           <div style={styles.logoArea}>
             <span style={styles.logoIcon}>🏛</span>
             <div>
-              <div style={styles.logoTitle}>AI 챗봇 서비스</div>
-              <div style={styles.logoSub}>청년 지원 정책</div>
+              <div style={styles.logoTitle}>Youth-Sync</div>
+              <div style={styles.logoSub}>나에게 맞는 청년정책 후보 찾기</div>
             </div>
           </div>
           <button onClick={resetSession} style={styles.newChatBtn}>
@@ -61,7 +61,7 @@ export default function ChatPage() {
 
       <main style={styles.main}>
         <div style={styles.faqSection}>
-          <FaqPanel />
+          <FaqPanel onSelectQuestion={setInput} />
         </div>
 
         <div style={styles.divider} />
@@ -70,7 +70,11 @@ export default function ChatPage() {
           {loadingHistory ? (
             <div style={styles.loadingInner}>대화 기록 불러오는 중...</div>
           ) : (
-            <ChatWindow messages={messages} />
+            <ChatWindow
+              messages={messages}
+              onSelectExample={setInput}
+              onFillInput={setInput}
+            />
           )}
 
           {chatError && <div style={styles.errorBanner}>{chatError}</div>}

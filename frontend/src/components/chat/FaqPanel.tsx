@@ -4,6 +4,10 @@ interface FaqItem {
   tag: string;
 }
 
+interface FaqPanelProps {
+  onSelectQuestion: (question: string) => void;
+}
+
 const FAQ_LIST: FaqItem[] = [
   {
     tag: "주거",
@@ -31,7 +35,7 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   금융: { bg: "#fef9c3", text: "#a16207" },
 };
 
-export default function FaqPanel() {
+export default function FaqPanel({ onSelectQuestion }: FaqPanelProps) {
   return (
     <aside style={styles.panel}>
       {/* ── 배경 디자인 플레이스홀더 ── */}
@@ -44,8 +48,8 @@ export default function FaqPanel() {
         <div style={styles.header}>
           <span style={styles.headerIcon}>💡</span>
           <div>
-            <div style={styles.headerTitle}>자주 묻는 질문</div>
-            <div style={styles.headerSub}>청년들이 가장 많이 찾는 정책</div>
+            <div style={styles.headerTitle}>빠른 질문 예시</div>
+            <div style={styles.headerSub}>조건을 눌러 바로 질문해보세요</div>
           </div>
         </div>
 
@@ -56,7 +60,12 @@ export default function FaqPanel() {
               text: "#475569",
             };
             return (
-              <div key={i} style={styles.card}>
+              <button
+                key={i}
+                type="button"
+                onClick={() => onSelectQuestion(item.question)}
+                style={styles.card}
+              >
                 {/* 번호 + 태그 */}
                 <div style={styles.cardTop}>
                   <span style={styles.number}>0{i + 1}</span>
@@ -85,7 +94,7 @@ export default function FaqPanel() {
                   <span style={styles.aMark}>A.</span>
                   <span>{item.answer}</span>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -164,6 +173,11 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: "10px",
+    width: "100%",
+    textAlign: "left",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    transition: "border-color 0.2s, background-color 0.2s, transform 0.2s",
   },
 
   cardTop: {

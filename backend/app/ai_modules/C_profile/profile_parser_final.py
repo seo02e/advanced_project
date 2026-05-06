@@ -138,6 +138,24 @@ def extract_region(text: str) -> str:
 
 
 def extract_employment_status(text: str) -> str:
+    correction_markers = ["아니고", "아니라", "사실", "정정", "실은"]
+    employed_correction_patterns = [
+        "무직이 아니라",
+        "무직 아니라",
+        "구직자가 아니라",
+        "구직자 아니라",
+        "취준생이 아니라",
+        "취준생 아니라",
+        "미취업이 아니라",
+        "미취업 아니라",
+    ]
+
+    if (
+        contains_any(text, employed_correction_patterns)
+        or (contains_any(text, correction_markers) and contains_any(text, EMPLOYMENT_KEYWORDS["employed"]))
+    ):
+        return "employed"
+
     # 우선순위: 구직/취준 > 재직 > 학생 > 실직
     # 예: "퇴사하고 구직 중"은 unemployed보다 job_seeking이 서비스상 더 유용하다.
     priority = ["job_seeking", "employed", "student", "unemployed"]
@@ -177,13 +195,13 @@ def extract_income_level(text: str) -> str:
     no_income_patterns = [
         "소득 없음", "소득이 없음", "소득은 없음",
         "소득 없어", "소득이 없어", "소득은 없어",
+        "소득이 거의 없어", "소득 거의 없어",
         "소득 없다", "소득이 없다", "소득은 없다",
         "수입 없음", "수입이 없음", "수입은 없음",
         "수입 없어", "수입이 없어", "수입은 없어",
         "수입 없다", "수입이 없다", "수입은 없다",
         "무소득", "벌이가 없어", "벌이 없음",
-        "돈을 안 벌", "돈 안 벌", "현재 수입 없어",
-        "백수라 소득", "구직 중이라 소득", "취준생이라 소득"
+        "돈을 안 벌", "돈 안 벌", "현재 수입 없어"
     ]
 
     if contains_any(text, no_income_patterns):
@@ -204,10 +222,10 @@ def extract_income_level(text: str) -> str:
 
     # 4. 금액 표현
     money_patterns = [
-        r"소득[^\d]{0,10}(\d{2,5})",
-        r"월소득[^\d]{0,10}(\d{2,5})",
-        r"월급[^\d]{0,10}(\d{2,5})",
-        r"수입[^\d]{0,10}(\d{2,5})",
+        r"소득[^\d]{0,10}(\d{1,5})",
+        r"월소득[^\d]{0,10}(\d{1,5})",
+        r"월급[^\d]{0,10}(\d{1,5})",
+        r"수입[^\d]{0,10}(\d{1,5})",
         r"연소득[^\d]{0,10}(\d{3,6})",
         r"연봉[^\d]{0,10}(\d{3,6})",
     ]
@@ -216,6 +234,9 @@ def extract_income_level(text: str) -> str:
         match = re.search(pattern, text)
         if match:
             amount = int(match.group(1))
+
+            if amount == 0:
+                return "low"
 
             # 월 단위처럼 보이는 표현
             if any(word in text for word in ["월소득", "월급", "월 수입", "한달", "한 달"]):
@@ -248,6 +269,40 @@ def extract_income_level(text: str) -> str:
             return level
 
     return "unknown"
+
+
+def extract_monthly_income(text: str) -> Optional[int]:
+    monthly_patterns = [
+        r"월\s*소득[^\d]{0,10}(\d{1,5})",
+        r"월소득[^\d]{0,10}(\d{1,5})",
+        r"월급[^\d]{0,10}(\d{1,5})",
+        r"수입[^\d]{0,10}(\d{1,5})",
+        r"소득[^\d]{0,10}월[^\d]{0,10}(\d{1,5})",
+        r"소득[^\d]{0,10}(\d{1,5})\s*원",
+        r"소득[^\d]{0,10}(\d{1,5})",
+    ]
+
+    for pattern in monthly_patterns:
+        match = re.search(pattern, text)
+        if match:
+            return int(match.group(1))
+
+    return None
+
+
+def has_explicit_income_info(text: str, income_level: str, monthly_income: Optional[int]) -> bool:
+    if monthly_income is not None:
+        return True
+
+    if income_level == "unknown":
+        return False
+
+    explicit_income_markers = [
+        "소득", "수입", "월급", "연봉", "연소득", "중위소득",
+        "무소득", "벌이", "저소득", "고소득", "수급자", "차상위"
+    ]
+
+    return contains_any(text, explicit_income_markers)
 
 
 def extract_household_head_status(text: str) -> str:
@@ -296,8 +351,13 @@ def build_unknown_fields(profile: Dict[str, Any]) -> List[str]:
     if "housing" in profile["interest_tags"] and profile["housing_status"] == "unknown":
         unknown_fields.append("housing_status")
 
-    # 소득은 대부분 정책 자격조건에서 필요하므로 기본 확인 필요로 둔다.
-    if profile["income_level"] == "unknown":
+    # 소득은 사용자가 명시했을 때만 채워진 것으로 본다.
+    income_missing = (
+        profile.get("income_level") == "unknown"
+        or (profile.get("monthly_income") is None and profile.get("income_provided") is not True)
+    )
+
+    if income_missing:
         unknown_fields.append("income_level")
 
     # 주거 정책 관심이면 세대주 여부도 확인 필요
@@ -341,6 +401,8 @@ def parse_profile(raw_text: str) -> Dict[str, Any]:
     employment_status = extract_employment_status(text)
     housing_status = extract_housing_status(text)
     income_level = extract_income_level(text)
+    monthly_income = extract_monthly_income(text)
+    income_provided = has_explicit_income_info(text, income_level, monthly_income)
     household_head_status = extract_household_head_status(text)
     interest_tags = extract_interest_tags(text, employment_status, housing_status)
 
@@ -352,6 +414,8 @@ def parse_profile(raw_text: str) -> Dict[str, Any]:
         "employment_status": employment_status,
         "housing_status": housing_status,
         "income_level": income_level,
+        "monthly_income": monthly_income,
+        "income_provided": income_provided,
         "interest_tags": interest_tags,
         "unknown_fields": [],
         "condition_flags": {

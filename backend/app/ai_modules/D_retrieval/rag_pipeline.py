@@ -167,6 +167,16 @@ def clean_value(value: Any) -> str:
     return text
 
 
+def has_income_provided(profile: Dict[str, Any]) -> bool:
+    if profile.get("income_provided") is True:
+        return True
+
+    if profile.get("monthly_income") is not None:
+        return True
+
+    return False
+
+
 def to_int_or_none(value: Any) -> Optional[int]:
     text = clean_value(value)
 
@@ -837,7 +847,26 @@ def calculate_policy_match_score(profile: Dict[str, Any], policy: Dict[str, Any]
         score -= 7.0
 
     # 3) 정규직/이직 준비자에게 학생·고교·학과형 정책 감점
-    if employment_status == "employed" and any(keyword in raw_text for keyword in ["이직", "정규직", "재직"]):
+    employed_context = employment_status == "employed" and (
+        employment_detail == "employed"
+        or any(keyword in raw_text for keyword in ["이직", "정규직", "재직"])
+    )
+
+    if employed_context:
+        employed_fit_keywords = [
+            "내일배움", "직업훈련", "교육훈련", "재직자", "근로자",
+            "직장적응", "역량", "전직", "이직"
+        ]
+        unemployed_only_keywords = [
+            "구직촉진", "실업", "미취업", "청년도전", "취업준비생", "취준생"
+        ]
+
+        if any(keyword in combined_text for keyword in employed_fit_keywords):
+            score += 4.0
+
+        if any(keyword in combined_text for keyword in unemployed_only_keywords):
+            score -= 5.0
+
         if is_student_or_school_only_policy(policy):
             score -= 10.0
         if is_company_side_policy(policy):
@@ -857,7 +886,11 @@ def calculate_policy_match_score(profile: Dict[str, Any], policy: Dict[str, Any]
             "국민취업지원", "내일배움", "청년도전", "취업성공",
             "직업훈련", "구직촉진", "직장적응"
         ]
-        if any(keyword in combined_text for keyword in personal_support_keywords):
+        unemployed_only_keywords = ["구직촉진", "실업", "미취업", "청년도전", "취업준비생", "취준생"]
+
+        if employed_context and any(keyword in combined_text for keyword in unemployed_only_keywords):
+            score -= 4.0
+        elif any(keyword in combined_text for keyword in personal_support_keywords):
             score += 5.0
 
     # 6) 월세 직접 질문에서 월세/주거급여 계열 우선
@@ -1014,7 +1047,7 @@ def evaluate_policy_eligibility(profile: Dict[str, Any], policy: Dict[str, Any])
     income_keywords = ["소득", "중위소득", "자산", "도시근로자", "수급자", "차상위"]
 
     if any(keyword in evidence_text for keyword in income_keywords):
-        if income_level == "unknown":
+        if income_level == "unknown" or not has_income_provided(profile):
             missing_requirements.append("소득수준")
         else:
             reasons.append("소득 정보가 입력되어 추가 대조가 가능합니다.")
@@ -1044,6 +1077,9 @@ def build_need_more_info(profile: Dict[str, Any]) -> List[str]:
     need_more_info = list(profile.get("need_more_info", []))
     interest_tags = profile.get("interest_tags", [])
 
+    if not has_income_provided(profile) and "소득수준" not in need_more_info:
+        need_more_info.append("소득수준")
+
     if "housing" in interest_tags:
         if "무주택 여부" not in need_more_info and profile.get("housing_status") in ["renting", "living_with_parents", "unknown"]:
             need_more_info.append("무주택 여부")
@@ -1058,10 +1094,17 @@ def build_need_more_info(profile: Dict[str, Any]) -> List[str]:
 
 def build_recommended_policies(profile: Dict[str, Any], matched_policies: List[Dict[str, Any]], limit: int = 5) -> List[Dict[str, Any]]:
     recommended: List[Dict[str, Any]] = []
+    profile_need_more_info = build_need_more_info(profile)
 
     for policy in matched_policies[:limit]:
         raw_policy_name = get_policy_name(policy)
         eligibility_result = evaluate_policy_eligibility(profile, policy)
+        missing_requirements = list(eligibility_result.get("missing_requirements", []))
+
+        if profile_need_more_info and eligibility_result.get("eligibility_status") == "maybe":
+            eligibility_result["eligibility_status"] = "확인 필요"
+            missing_requirements = list(dict.fromkeys(missing_requirements + profile_need_more_info))
+            eligibility_result["missing_requirements"] = missing_requirements
 
         recommended.append(
             {
@@ -1077,7 +1120,7 @@ def build_recommended_policies(profile: Dict[str, Any], matched_policies: List[D
                 "policy_match_score": policy.get("policy_match_score", 0.0),
                 "eligibility_result": eligibility_result,
                 "eligibility_status": eligibility_result["eligibility_status"],
-                "missing_requirements": eligibility_result["missing_requirements"],
+                "missing_requirements": missing_requirements,
             }
         )
 
@@ -1168,6 +1211,7 @@ def build_answer_blocks(
     need_more_info: List[str],
 ) -> Dict[str, Any]:
     primary_interest = detect_primary_interest(profile)
+    correction_notice = clean_value(profile.get("correction_notice", ""))
 
     if not recommended_policies:
         raw_text = clean_value(profile.get("raw_text", ""))
@@ -1187,12 +1231,16 @@ def build_answer_blocks(
                 "아직 되나",
             ]
         ):
-            return {
-                "summary": (
+            summary = (
                     f"{age}세는 많은 청년정책에서 아직 대상 연령에 포함될 수 있습니다. "
                     "다만 정책별로 만 34세 이하, 만 39세 이하처럼 기준이 다르기 때문에 "
                     "관심 분야와 소득수준 확인이 필요합니다."
-                ),
+                )
+            if correction_notice:
+                summary = f"{correction_notice} {summary}"
+
+            return {
+                "summary": summary,
                 "recommended": [],
                 "need_more_info": need_more_info,
                 "sources": [],
@@ -1203,16 +1251,24 @@ def build_answer_blocks(
             }
 
         if primary_interest == "unknown":
+            summary = "관심 분야가 명확하지 않아 정책 후보를 넓게 추천하지 않았습니다."
+            if correction_notice:
+                summary = f"{correction_notice} {summary}"
+
             return {
-                "summary": "관심 분야가 명확하지 않아 정책 후보를 넓게 추천하지 않았습니다.",
+                "summary": summary,
                 "recommended": [],
                 "need_more_info": need_more_info,
                 "sources": [],
                 "next_action": "주거, 취업, 창업, 생활지원 중 어떤 분야의 정책을 보고 싶은지 먼저 선택해 주세요.",
             }
 
+        summary = "현재 입력 조건으로는 조건에 맞는 정책 후보를 찾지 못했습니다."
+        if correction_notice:
+            summary = f"{correction_notice} {summary}"
+
         return {
-            "summary": "현재 입력 조건으로는 조건에 맞는 정책 후보를 찾지 못했습니다.",
+            "summary": summary,
             "recommended": [],
             "need_more_info": need_more_info,
             "sources": [],
@@ -1274,8 +1330,12 @@ def build_answer_blocks(
             }
         )
 
+    summary = "입력 조건을 기준으로 정책 후보를 찾았지만, 최종 자격 확정을 위해 추가 확인이 필요합니다."
+    if correction_notice:
+        summary = f"{correction_notice} {summary}"
+
     return {
-        "summary": "입력 조건을 기준으로 정책 후보를 찾았지만, 최종 자격 확정을 위해 추가 확인이 필요합니다.",
+        "summary": summary,
         "recommended": recommended_blocks,
         "need_more_info": need_more_info,
         "sources": sources,

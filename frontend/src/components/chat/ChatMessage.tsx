@@ -300,7 +300,7 @@ function getNextActionText(needMoreInfo: string[]) {
     return `${fields}을 알려주시면 각 정책의 가능성을 더 정확히 좁혀드릴 수 있습니다.`;
   }
 
-  return `${fields}를 알려주시면 정책 가능성을 더 정확히 좁혀드릴 수 있습니다.`;
+  return `${fields}${getObjectParticle(fields)} 알려주시면 정책 가능성을 더 정확히 좁혀드릴 수 있습니다.`;
 }
 
 function buildMissingInfoDraft(items: unknown) {
@@ -321,6 +321,24 @@ function getMissingInfoPhrase(item: string) {
   };
 
   return templateMap[item] ?? `${item}은 ___`;
+}
+
+function getObjectParticle(text: string) {
+  const lastChar = text.trim().at(-1);
+
+  if (!lastChar) {
+    return "를";
+  }
+
+  const code = lastChar.charCodeAt(0);
+  const hangulStart = 0xac00;
+  const hangulEnd = 0xd7a3;
+
+  if (code < hangulStart || code > hangulEnd) {
+    return "를";
+  }
+
+  return (code - hangulStart) % 28 === 0 ? "를" : "을";
 }
 
 function isString(value: unknown): value is string {
