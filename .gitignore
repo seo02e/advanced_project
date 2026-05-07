@@ -28,5 +28,7 @@ dist/
 package-lock.json
 
 # Backend
+# app/data
 policy_master_final.csv
-policy_metadta.json
+policy_metadata.json
+crawling_chunks/
