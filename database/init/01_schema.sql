@@ -4,7 +4,7 @@ create table if not exists youth_policy (
 	policy_name text not null,
 	category text not null,
 	subcategory text,
-	region_scope text not null,
+	region_scope text,
 	age_min integer,
 	age_max integer,
 	employment_condition text,
@@ -12,7 +12,7 @@ create table if not exists youth_policy (
 	income_condition_text text,
 	apply_start_date timestamp,
 	apply_end_date timestamp,
-	apply_status text not null,
+	apply_status text,
 	source_org text,
 	source_url text,
 	summary text,
@@ -51,8 +51,7 @@ commit;
 
 CREATE TABLE IF NOT EXISTS policy_chunks (
     chunk_id text PRIMARY KEY,
-    policy_id text NOT NULL
-        REFERENCES youth_policy(policy_id),
+    policy_id text NOT NULL REFERENCES youth_policy(policy_id),
     policy_name text,
     issuing_org text,
     source_doc_name text,
