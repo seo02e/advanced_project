@@ -12,7 +12,7 @@ class PolicyAPI(BaseModel):
     employment_condition : str | None = None        # 취업/재직 조건
     housing_condition : str | None = None           # 무주택/세대주 등 주거 조건
     income_condition_text : str | None = None       # 소득 조건 원문
-    apply_end_date : date | None = None             # 신청 시작일
+    apply_start_date : date | None = None           # 신청 시작일
     apply_end_date : date | None = None             # 신청 종료일
     apply_status : str                              # 신청 가능 유무(가능/마감/확인필요/unknown)
     source_org : str | None = None                  # 출처 기관
