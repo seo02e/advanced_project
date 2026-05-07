@@ -71,7 +71,7 @@ UPSERT_POLICY_API_SQL = text("""
         updated_at = now()
 """)
 
-
+# 정책 API 데이터 업서트 (중복 시 업데이트)
 def upsert_policy_rows(
     db: Session,
     policies: list[PolicyAPI]
@@ -141,6 +141,7 @@ UPSERT_POLICY_CHUNKS_SQL = text("""
         updated_at = now()
 """)
 
+# 정책 크롤링 데이터 업서트 (중복 시 업데이트)
 def upsert_policy_chunks(
     db: Session,
     chunks: list[PolicyCrawling]
@@ -156,3 +157,71 @@ def upsert_policy_chunks(
     db.execute(UPSERT_POLICY_CHUNKS_SQL, rows)
 
     return len(rows)
+
+SELECT_POLICY_ROWS_SQL = text("""
+    SELECT
+        policy_id,
+        policy_name,
+        category,
+        subcategory,
+        region_scope,
+        age_min,
+        age_max,
+        employment_condition,
+        housing_condition,
+        income_condition_text,
+        apply_start_date,
+        apply_end_date,
+        apply_status,
+        source_org,
+        source_url,
+        summary,
+        source_type,
+        source_layer
+    FROM youth_policy
+    WHERE source_layer = :source_layer
+    ORDER BY id
+""")
+
+#   정책 API 데이터 조회 (RAG용) - source_layer 조건으로 조회
+def select_policy_rows_for_retrieval(
+    db: Session,
+    source_layer: str,
+) -> list[dict]:
+
+    rows = db.execute(
+        SELECT_POLICY_ROWS_SQL,
+        {"source_layer": source_layer}
+    ).mappings().all()
+
+    return [dict(row) for row in rows]
+
+
+SELECT_POLICY_CHUNKS_SQL = text("""
+    SELECT
+        chunk_id,
+        policy_id,
+        policy_name,
+        issuing_org,
+        source_doc_name,
+        source_url,
+        section_title,
+        chunk_text,
+        chunk_order,
+        has_table,
+        doc_type,
+        created_from,
+        source_layer
+    FROM policy_chunks
+    ORDER BY policy_id, chunk_order
+""")
+
+
+#   정책 크롤링 데이터 조회 (RAG용) - source_layer 조건 없이 전체 조회
+def select_policy_chunks_for_retrieval(
+    db: Session,
+) -> list[dict]:
+
+    rows = db.execute(SELECT_POLICY_CHUNKS_SQL).mappings().all()
+
+    return [dict(row) for row in rows]
