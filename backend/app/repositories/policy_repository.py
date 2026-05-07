@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.schemas.policy import PolicyAPI
+from app.schemas.policy import PolicyAPI, PolicyCrawling
 
 
 UPSERT_POLICY_API_SQL = text("""
@@ -45,7 +45,7 @@ UPSERT_POLICY_API_SQL = text("""
         :source_url,
         :summary,
         :source_type,
-        'A',
+        :source_layer,
         now(),
         now()
     )
@@ -67,7 +67,7 @@ UPSERT_POLICY_API_SQL = text("""
         source_url = EXCLUDED.source_url,
         summary = EXCLUDED.summary,
         source_type = EXCLUDED.source_type,
-        source_layer = 'A',
+        source_layer = EXCLUDED.source_layer,
         updated_at = now()
 """)
 
@@ -86,5 +86,73 @@ def upsert_policy_rows(
     ]
 
     db.execute(UPSERT_POLICY_API_SQL, rows)
+
+    return len(rows)
+
+UPSERT_POLICY_CHUNKS_SQL = text("""
+    INSERT INTO policy_chunks (
+        chunk_id,
+        policy_id,
+        policy_name,
+        issuing_org,
+        source_doc_name,
+        source_url,
+        section_title,
+        chunk_text,
+        chunk_order,
+        has_table,
+        doc_type,
+        created_from,
+        source_layer,
+        created_at,
+        updated_at
+    )
+    VALUES (
+        :chunk_id,
+        :policy_id,
+        :policy_name,
+        :issuing_org,
+        :source_doc_name,
+        :source_url,
+        :section_title,
+        :chunk_text,
+        :chunk_order,
+        :has_table,
+        :doc_type,
+        :created_from,
+        :source_layer,
+        now(),
+        now()
+    )
+    ON CONFLICT (chunk_id)
+    DO UPDATE SET
+        policy_id = EXCLUDED.policy_id,
+        policy_name = EXCLUDED.policy_name,
+        issuing_org = EXCLUDED.issuing_org,
+        source_doc_name = EXCLUDED.source_doc_name,
+        source_url = EXCLUDED.source_url,
+        section_title = EXCLUDED.section_title,
+        chunk_text = EXCLUDED.chunk_text,
+        chunk_order = EXCLUDED.chunk_order,
+        has_table = EXCLUDED.has_table,
+        doc_type = EXCLUDED.doc_type,
+        created_from = EXCLUDED.created_from,
+        source_layer = EXCLUDED.source_layer,
+        updated_at = now()
+""")
+
+def upsert_policy_chunks(
+    db: Session,
+    chunks: list[PolicyCrawling]
+) -> int:
+    if not chunks:
+        return 0
+
+    rows = [
+        chunk.model_dump()
+        for chunk in chunks
+    ]
+
+    db.execute(UPSERT_POLICY_CHUNKS_SQL, rows)
 
     return len(rows)
