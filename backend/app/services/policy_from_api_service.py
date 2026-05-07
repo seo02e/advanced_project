@@ -23,6 +23,7 @@ import requests
 import logging
 logger = logging.getLogger(__name__)
 
+from app.services.policy_service import save_policy_api_df
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
@@ -564,9 +565,6 @@ def policy_from_api():
 
     logger.info(f"policy_id 중복 제거: {before_dedup}건 -> {len(out)}건")
     
-    ###### DB 관련 작업 추가 필요
-    # logger.info(f"out : {out}")
-    
     DATA_DIR.mkdir(exist_ok=True)
 
     # 파일 저장
@@ -574,6 +572,8 @@ def policy_from_api():
     write_metadata()
     
     # DB 저장
+    saved_count = save_policy_api_df(out)
+    logger.info(f"DB 저장 완료: {saved_count}건")
 
     logger.info(f"저장 완료: {OUTPUT_CSV.name}")
     logger.info(f"메타데이터 저장 완료: {OUTPUT_META.name}")
