@@ -1,6 +1,5 @@
 create table if not exists youth_policy (
-	id serial primary key,
-	policy_id text not null unique,
+	policy_id text PRIMARY KEY,
 	policy_name text not null,
 	category text not null,
 	subcategory text,
