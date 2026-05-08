@@ -16,6 +16,14 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+################################## 추가된 내용 ####################################
+from app.infra.database import SessionLocal
+from app.repositories.policy_repository import (
+    select_policy_rows_for_retrieval,
+    select_policy_chunks_for_retrieval,
+)
+#####################################################################################
+
 try:
     from llm_answer_generator import generate_llm_answer
 except ImportError:
@@ -423,61 +431,116 @@ def find_chunk_jsonl_path() -> Optional[Path]:
     return None
 
 
+############################################## 변경된 내용 ###############################################
+
+# def read_policy_master() -> List[Dict[str, Any]]:
+#     csv_path = find_policy_csv_path()
+#     policies: List[Dict[str, Any]] = []
+
+#     with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
+#         reader = csv.DictReader(f)
+#         for row in reader:
+#             normalized = {k: clean_value(v) for k, v in row.items()}
+#             normalized["source_layer"] = "A"
+#             policies.append(normalized)
+
+#     return policies
+
+
+# def read_b_housing_policy_master() -> List[Dict[str, Any]]:
+#     csv_path = find_b_policy_csv_path()
+
+#     if csv_path is None:
+#         return []
+
+#     policies: List[Dict[str, Any]] = []
+
+#     with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
+#         reader = csv.DictReader(f)
+#         for row in reader:
+#             normalized = {k: clean_value(v) for k, v in row.items()}
+#             normalized["source_layer"] = "B"
+#             policies.append(normalized)
+
+#     return policies
+
+
+# def read_housing_chunks() -> List[Dict[str, Any]]:
+#     chunk_path = find_chunk_jsonl_path()
+
+#     if chunk_path is None:
+#         return []
+
+#     chunks: List[Dict[str, Any]] = []
+
+#     with chunk_path.open("r", encoding="utf-8-sig") as f:
+#         for line in f:
+#             line = line.strip()
+
+#             if not line:
+#                 continue
+
+#             try:
+#                 item = json.loads(line)
+#             except json.JSONDecodeError:
+#                 continue
+
+#             chunks.append(item)
+
+#     return chunks
+
+
 def read_policy_master() -> List[Dict[str, Any]]:
-    csv_path = find_policy_csv_path()
-    policies: List[Dict[str, Any]] = []
+    db = SessionLocal()
 
-    with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            normalized = {k: clean_value(v) for k, v in row.items()}
-            normalized["source_layer"] = "A"
-            policies.append(normalized)
+    try:
+        policies = select_policy_rows_for_retrieval(
+            db=db,
+            source_layer="A",
+        )
 
-    return policies
+        return [
+            {key: clean_value(value) for key, value in policy.items()}
+            for policy in policies
+        ]
+
+    finally:
+        db.close()
 
 
 def read_b_housing_policy_master() -> List[Dict[str, Any]]:
-    csv_path = find_b_policy_csv_path()
+    db = SessionLocal()
 
-    if csv_path is None:
-        return []
+    try:
+        policies = select_policy_rows_for_retrieval(
+            db=db,
+            source_layer="B",
+        )
 
-    policies: List[Dict[str, Any]] = []
+        return [
+            {key: clean_value(value) for key, value in policy.items()}
+            for policy in policies
+        ]
 
-    with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            normalized = {k: clean_value(v) for k, v in row.items()}
-            normalized["source_layer"] = "B"
-            policies.append(normalized)
-
-    return policies
+    finally:
+        db.close()
 
 
 def read_housing_chunks() -> List[Dict[str, Any]]:
-    chunk_path = find_chunk_jsonl_path()
+    db = SessionLocal()
 
-    if chunk_path is None:
-        return []
+    try:
+        chunks = select_policy_chunks_for_retrieval(db=db)
 
-    chunks: List[Dict[str, Any]] = []
+        return [
+            {key: clean_value(value) for key, value in chunk.items()}
+            for chunk in chunks
+        ]
 
-    with chunk_path.open("r", encoding="utf-8-sig") as f:
-        for line in f:
-            line = line.strip()
-
-            if not line:
-                continue
-
-            try:
-                item = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-
-            chunks.append(item)
-
-    return chunks
+    finally:
+        db.close()
+        
+#######################################################################################################################
 
 
 def get_policy_category(policy: Dict[str, Any]) -> str:

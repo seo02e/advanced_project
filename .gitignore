@@ -21,6 +21,14 @@ Thumbs.db
 
 # DB data 폴더
 postgre_data
+
 # Frontend
 node_modules/
 dist/
+package-lock.json
+
+# Backend
+# app/data
+policy_master_final.csv
+policy_metadata.json
+crawling_chunks/

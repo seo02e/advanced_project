@@ -14,6 +14,8 @@ from app.api import session, chat
 from app.core.logger import setup_logging
 from app.core.exception_handlers import register_exception_handlers
 from app.infra.scheduler import start_scheduler, end_scheduler
+from app.services.policy_from_api_service import policy_from_api
+from app.services.policy_from_crawling_service import save_policy_crawling_chunks
 
 
 ################## 초기 세팅 ######################
@@ -96,7 +98,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://192.168.0.45:5173",
-        "http://192.168.0.65:5173"
+        "http://192.168.0.65:5173",
+        "http://192.168.45.167:5173"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -104,20 +107,19 @@ app.add_middleware(
 )
 ##################################################
 
+# 수동 api 배치
+@app.get("/youth-policy-api-batch")
+def get_data_from_api():
+    policy_from_api()
+
+# 수동 crawling 배치
+@app.get("/youth-policy-crawling-batch")
+def get_data_from_crawling():
+    save_policy_crawling_chunks()
+    
 
 app.include_router(session.router)
 app.include_router(chat.router)
-
-from app.services.policy_from_api_service import policy_from_api
-from typing import List, Dict, Any
-import pandas as pd
-import os
-from pathlib import Path
-
-
-@app.get("/test")
-def test_main():
-    policy_from_api()
 
 @app.get("/")
 def root():
