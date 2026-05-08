@@ -180,7 +180,7 @@ SELECT_POLICY_ROWS_SQL = text("""
         source_layer
     FROM youth_policy
     WHERE source_layer = :source_layer
-    ORDER BY id
+    ORDER BY policy_id
 """)
 
 #   정책 API 데이터 조회 (RAG용) - source_layer 조건으로 조회
